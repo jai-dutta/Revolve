@@ -16,7 +16,7 @@ Revolve is a minimalist web application I am building to track my academic commi
 
 ### 1.2 Project Description
 
-Revolve is a simplistic, minimal web app that tracks academic calendars and helps students keep on top of incomplete work. It features a full-screen-width calendar with cards representing lectures, tutorials, workshops, and assignment work. As a user completes an item of work, they log in and flip the card, which then grays out for that week. Unflipped cards at week's end automatically move to a backlog section. The backlog displays the total time value of contained work items. Users can also add assignments with time allocations (e.g., 2 hours per week for a specific course assignment).
+Revolve is a simplistic, minimal web app that tracks academic calendars and helps students keep on top of incomplete work. It features a full-screen-width calendar with cards representing lectures, tutorials, workshops, and assignment work. As a user completes an item of work, they log in and flip the card, which then grays out for that week. Unflipped cards at week's end automatically move to a backlog section. The backlog displays the total time value of contained work items. Users can also add assignments with time allocations (e.g., 2 hours per week for a specific course assignment). The calender is setup once and then "revolves", e.g. only one week is ever displayed, with the same items on it each week. This aims to simply aid students in tracking what they have and have not completed each week.
 
 ---
 
