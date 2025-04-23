@@ -65,7 +65,7 @@ Revolve aims to solve these challenges by providing a simple, visual academic ca
 
 - Frontend: React
 - Backend: Java Spring Boot
-- Database: PostgreSQL
+- Database: AWS RDS (PostgreSQL)
 - Cloud deployment: AWS
 - CI/CD: AWS CodePipeline + CodeBuild + CodeDeploy
 
@@ -80,26 +80,70 @@ Revolve aims to solve these challenges by providing a simple, visual academic ca
 
 ### 4.3 Timeline
 
-#### Phase 1 - Frontend Development
+#### Phase 1 - Backend Development (Java Spring Boot & PostgreSQL)
 
-- **Week 1** | 14th April 
-	- Project commences.
-	- SRS outline written. 
-- **Week 2** | 21nd April
-	- Setup React project structure.
-	- Design UI mockup
-	- Implement basic UI components (nav bar, layout)
-- **Week 3** | 28th April
-	- Iterate UI mockup
-	- Create form for adding cards
-	- Implement calendar components
-	- Implement card components
-- **Week 4** | 5th May
-	- Implement backlog components
-	- Testing with mock data calls
-#### Phase 2 - Backend Development
-- **Week 5** | 12th May
-	- 
+This phase focuses on building the server-side logic, API, and database interactions necessary to support the Revolve application features. Development will proceed through the following key stages:
+
+**Phase 1.1: Project Initialization and Database Integration**
+
+- **Objective:** Establish a functional Spring Boot backend project configured to communicate reliably with the designated AWS RDS PostgreSQL database instance.
+- **Key Tasks:**
+    - Initialize the Spring Boot project using Maven or Gradle, including essential dependencies (Spring Web, Spring Data JPA, Spring Security, PostgreSQL Driver, Lombok, Validation, JWT Support Library).
+    - Configure the `application.properties` (or `.yml`) file within `src/main/resources/` to specify database connection parameters (URL, username, password) targeting the AWS RDS instance. **Credentials must be externalized using environment variables.**
+    - Implement initial run configuration to supply environment variables locally.
+    - Verify successful database connectivity upon application startup by observing logs and absence of connection errors. Ensure RDS Security Group permits connection from the development environment.
+
+**Phase 1.2: Authentication Foundation**
+
+- **Objective:** Implement core user registration, secure login functionality, and stateless session management using JSON Web Tokens (JWT).
+- **Key Tasks:**
+    - Define the `User` JPA entity including necessary fields (ID, email, hashed password, timestamps) and create the corresponding `UserRepository` interface.
+    - Configure Spring Security: Implement `UserDetailsService` using `UserRepository`, define `PasswordEncoder` bean (BCrypt), establish initial `SecurityFilterChain` bean defining public (`/api/auth/**`) and protected (`/api/**`) endpoint rules.
+    - Implement `POST /api/auth/register` endpoint, including input validation (DTOs) and secure password hashing before saving the user.
+    - Implement `POST /api/auth/login` endpoint utilizing Spring Security's `AuthenticationManager` for credential validation.
+    - Implement JWT generation service: Create signed JWTs upon successful login containing necessary user claims (e.g., user ID). The JWT secret key must be securely managed via environment variables.
+    - Implement JWT validation filter: Create and configure a filter to intercept requests to protected endpoints, validate the incoming JWT (signature, expiration), and establish the authenticated user context (`SecurityContextHolder`).
+    - Implement a basic protected test endpoint (e.g., `GET /api/users/me`) to verify the end-to-end authentication and token validation flow.
+    - _Testing:_ Develop integration tests covering user registration, login success/failure scenarios, and JWT validation for protected resources.
+
+**Phase 1.3: Core Domain Model Implementation (Activities)**
+
+- **Objective:** Define and implement the data models and API endpoints required for managing user-specific academic activities (recurring templates).
+- **Key Tasks:**
+    - Define `RecurringActivity` (and optional `Course`) JPA entities with appropriate fields and relationships (linking to `User`). Create associated `JpaRepository` interfaces.
+    - Implement protected RESTful API endpoints (Controller layer) providing CRUD (Create, Read, Update, Delete) operations for these entities. Utilize DTOs for request/response payloads and implement input validation.
+    - **Enforce User Ownership:** Critically ensure all service and repository logic strictly isolates data access and modification based on the authenticated user's ID retrieved from the security context.
+    - _Testing:_ Develop integration tests for all CRUD operations, specifically verifying correct data handling and robust enforcement of user ownership constraints.
+
+**Phase 1.4: Activity Instance Management and Tracking**
+
+- **Objective:** Implement the system for managing specific weekly occurrences of activities derived from templates and tracking their completion status.
+- **Key Tasks:**
+    - Define the `ActivityInstance` JPA entity (linking to `RecurringActivity` and `User`) including fields for `dueDate`, `isCompleted`, `isBacklogged`, etc. Create the associated `ActivityInstanceRepository`.
+    - Design and implement the core logic for generating `ActivityInstance` records based on active `RecurringActivity` templates (consider strategies like scheduled tasks or on-demand generation).
+    - Implement the API endpoint (`GET /api/activity-instances`) allowing retrieval of instances filtered by the authenticated user and a specified date range (e.g., for displaying a weekly calendar view).
+    - Implement the API endpoint (`PUT /api/activity-instances/{id}/complete`) allowing an authenticated user to mark their own activity instance as completed ("flip card"). Ensure ownership verification.
+    - _Testing:_ Develop integration tests verifying instance generation logic, correct retrieval based on user/date filters, and the completion status update mechanism including ownership checks.
+
+**Phase 1.5: Backlog Feature Implementation**
+
+- **Objective:** Implement the specific Revolve feature for identifying, flagging, and retrieving activities that were not completed within their designated week.
+- **Key Tasks:**
+    - Design and implement the logic (e.g., using `@Scheduled` tasks) to periodically identify past-due `ActivityInstance` records that are not completed and flag them by setting `is_backlogged = true`.
+    - Implement the API endpoint (`GET /api/backlog`) to retrieve the list of active backlog items (where `is_backlogged = true` and `is_completed = false`) for the currently authenticated user. Consider including associated time values.
+    - _Testing:_ Develop tests verifying the accuracy of the backlog flagging logic and the correct retrieval of backlog items via the API endpoint.
+
+**Phase 1.6: Refinement, Error Handling, and Basic CI Setup**
+
+- **Objective:** Enhance the overall quality, robustness, and maintainability of the backend codebase and establish automated checks.
+- **Key Tasks:**
+    - Implement consistent, application-wide exception handling using `@ControllerAdvice` to provide meaningful API error responses.
+    - Review and enhance input validation across API endpoints using `@Valid` annotations on DTOs.
+    - Refactor existing code where necessary to improve clarity, reduce duplication, and adhere to best practices.
+    - Configure a basic Continuous Integration (CI) pipeline (e.g., using GitHub Actions or AWS CodeBuild) triggered on code commits to automatically compile the application and execute the test suite.
+
+#### Phase 2 - Frontend Development
+TODO
 
 ---
 
