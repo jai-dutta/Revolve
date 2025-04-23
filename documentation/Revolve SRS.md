@@ -89,7 +89,7 @@ This phase focuses on building the server-side logic, API, and database interact
 - **Objective:** Establish a functional Spring Boot backend project configured to communicate reliably with the designated AWS RDS PostgreSQL database instance.
 - **Key Tasks:**
     - Initialize the Spring Boot project using Maven or Gradle, including essential dependencies (Spring Web, Spring Data JPA, Spring Security, PostgreSQL Driver, Lombok, Validation, JWT Support Library).
-    - Configure the `application.properties` (or `.yml`) file within `src/main/resources/` to specify database connection parameters (URL, username, password) targeting the AWS RDS instance. **Credentials must be externalized using environment variables.**
+    - Configure the `application.properties` (or `.yml`) file within `src/main/resources/` to specify database connection parameters (URL, username, password) targeting the AWS RDS instance. **Credentials must be externalised using environment variables.**
     - Implement initial run configuration to supply environment variables locally.
     - Verify successful database connectivity upon application startup by observing logs and absence of connection errors. Ensure RDS Security Group permits connection from the development environment.
 
@@ -111,7 +111,7 @@ This phase focuses on building the server-side logic, API, and database interact
 - **Objective:** Define and implement the data models and API endpoints required for managing user-specific academic activities (recurring templates).
 - **Key Tasks:**
     - Define `RecurringActivity` (and optional `Course`) JPA entities with appropriate fields and relationships (linking to `User`). Create associated `JpaRepository` interfaces.
-    - Implement protected RESTful API endpoints (Controller layer) providing CRUD (Create, Read, Update, Delete) operations for these entities. Utilize DTOs for request/response payloads and implement input validation.
+    - Implement protected RESTful API endpoints (Controller layer) providing CRUD (Create, Read, Update, Delete) operations for these entities. Utilise DTOs for request/response payloads and implement input validation.
     - **Enforce User Ownership:** Critically ensure all service and repository logic strictly isolates data access and modification based on the authenticated user's ID retrieved from the security context.
     - _Testing:_ Develop integration tests for all CRUD operations, specifically verifying correct data handling and robust enforcement of user ownership constraints.
 
