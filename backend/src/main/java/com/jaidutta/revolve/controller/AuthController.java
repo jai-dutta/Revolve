@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,8 +34,8 @@ public class AuthController {
         this.jwtUtils = jwtUtils;
     }
 
-    @RequestMapping("/register")
-    public ResponseEntity<?> register(RegisterRequestDto registerRequestDto) {
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
         try {
             authService.registerUser(registerRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful.");
@@ -42,8 +44,8 @@ public class AuthController {
         }
     }
 
-    @RequestMapping("/login")
-    public ResponseEntity<?> login(LoginRequestDto loginRequestDto) {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
