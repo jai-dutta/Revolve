@@ -1,10 +1,18 @@
 package com.jaidutta.revolve.controller;
 
+import com.jaidutta.revolve.controller.dto.AuthDto;
+import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
+import com.jaidutta.revolve.security.JwtUtils;
 import com.jaidutta.revolve.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,10 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping( "/api/auth")
 public class AuthController {
     private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtils jwtUtils) {
         this.authService = authService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
     }
 
     @RequestMapping("/register")
@@ -25,6 +39,27 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration unsuccessful: " + e.getMessage());
+        }
+    }
+
+    @RequestMapping("/login")
+    public ResponseEntity<?> login(LoginRequestDto loginRequestDto) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequestDto.getUsername(),
+                            loginRequestDto.getPassword()
+                    ));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwt = jwtUtils.generateToken(authentication);
+            AuthDto authDto = new AuthDto(jwt);
+            return ResponseEntity.ok(authDto);
+
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed: " + e.getMessage());
         }
     }
 }
