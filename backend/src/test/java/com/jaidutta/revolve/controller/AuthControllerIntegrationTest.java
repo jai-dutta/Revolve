@@ -15,6 +15,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public class AuthControllerIntegrationTest {
@@ -82,6 +85,38 @@ public class AuthControllerIntegrationTest {
                 String.class);
 
         assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+    }
+
+    @Test
+    void testTooShortPassword() {
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
+                "integ-test",
+                "pass");
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                Map.class);
+
+        assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+        assert (response.getBody() != null && response.getBody().containsValue("Password must be between 8 and 64 " +
+                "characters"));
+    }
+
+    @Test
+    void testTooLongPassword() {
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
+                "integ-test",
+                "passwordpasswordpasswordpassword-passwordpasswordpasswordpassword"); // 65 chars (max 64)
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                Map.class);
+
+        assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+        assert (response.getBody() != null && response.getBody().containsValue("Password must be between 8 and 64 " +
+                "characters"));
     }
 
 }
