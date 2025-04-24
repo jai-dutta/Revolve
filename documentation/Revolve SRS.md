@@ -68,6 +68,7 @@ Revolve aims to solve these challenges by providing a simple, visual academic ca
 - Database: AWS RDS (PostgreSQL)
 - Cloud deployment: AWS
 - CI/CD: AWS CodePipeline + CodeBuild + CodeDeploy
+- Containerised testing with Docker and TestContainers
 
 ### 4.2 Development Phases
 
