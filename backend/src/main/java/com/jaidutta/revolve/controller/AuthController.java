@@ -3,6 +3,7 @@ package com.jaidutta.revolve.controller;
 import com.jaidutta.revolve.controller.dto.AuthDto;
 import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
+import com.jaidutta.revolve.exception.NonUniqueUsernameException;
 import com.jaidutta.revolve.security.JwtUtils;
 import com.jaidutta.revolve.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class AuthController {
         try {
             authService.registerUser(registerRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful.");
-        } catch (IllegalArgumentException e) {
+        } catch (NonUniqueUsernameException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration unsuccessful: " + e.getMessage());
         }
     }

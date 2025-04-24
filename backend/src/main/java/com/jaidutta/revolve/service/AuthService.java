@@ -3,6 +3,7 @@ package com.jaidutta.revolve.service;
 import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.entity.User;
+import com.jaidutta.revolve.exception.NonUniqueUsernameException;
 import com.jaidutta.revolve.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,13 +25,13 @@ public class AuthService {
         return userRepository.findByUsername(username).isPresent();
     }
 
-    public void registerUser(RegisterRequestDto registerRequestDto) throws IllegalArgumentException {
+    public void registerUser(RegisterRequestDto registerRequestDto) throws NonUniqueUsernameException {
         String username = registerRequestDto.getUsername();
         String password = registerRequestDto.getPassword();
 
         if (isUserRegistered(username)) {
             // TO-DO: Custom exception here
-            throw new IllegalArgumentException("User already registered");
+            throw new NonUniqueUsernameException("User already registered");
         }
 
         User newUser = new User(username, passwordEncoder.encode(password));
