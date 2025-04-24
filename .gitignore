@@ -8,3 +8,4 @@ backend/HELP.md
 documentation/.DS_Store
 /backend/build
 /.idea
+backend/.env
