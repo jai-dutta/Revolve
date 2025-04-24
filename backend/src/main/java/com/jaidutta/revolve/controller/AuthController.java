@@ -6,6 +6,7 @@ import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.exception.NonUniqueUsernameException;
 import com.jaidutta.revolve.security.JwtUtils;
 import com.jaidutta.revolve.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
         try {
             authService.registerUser(registerRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful.");
