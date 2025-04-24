@@ -59,4 +59,29 @@ public class AuthControllerIntegrationTest {
         assert (response.getStatusCode().equals(HttpStatus.CREATED));
     }
 
+    @Test
+    void testDuplicateUsernameRegistration() {
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
+                "integ-test",
+                "password");
+
+        ResponseEntity<String> response = restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                String.class);
+
+        assert (response.getStatusCode().equals(HttpStatus.CREATED));
+
+        registerRequestDto = new RegisterRequestDto(
+                "integ-test",
+                "password");
+
+        response = restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                String.class);
+
+        assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+    }
+
 }
