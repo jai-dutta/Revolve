@@ -1,5 +1,6 @@
 package com.jaidutta.revolve.controller;
 
+import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +18,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public class AuthControllerIntegrationTest {
-
-
 
     @Autowired
     private UserRepository userRepository;
@@ -119,4 +119,69 @@ public class AuthControllerIntegrationTest {
                 "characters"));
     }
 
+    @Test
+    void testTooLongUsername() {
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
+                "usernameusernameusernameusername-usernameusernameusernameusername", // 65 chars (max 64)
+                "password"
+        );
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                Map.class
+        );
+
+        assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+        assert (response.getBody() != null && response.getBody().containsValue("Username must be between 4 and 64 " +
+                "characters"));
+    }
+
+    @Test
+    void testTooShortUsername() {
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
+                "use",
+                "password"
+        );
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                Map.class
+        );
+
+        assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+        assert (response.getBody() != null && response.getBody().containsValue("Username must be between 4 and 64 " +
+                "characters"));
+    }
+
+    @Test
+    void testLoginSuccessful() {
+
+        assert (registerEntitySuccessfully("username", "password")
+                .getStatusCode().equals(HttpStatus.CREATED));
+
+        LoginRequestDto loginRequestDto = new LoginRequestDto("username", "password");
+        ResponseEntity<String> response = restTemplate.postForEntity(
+                "/api/auth/login",
+                loginRequestDto,
+                String.class
+        );
+
+        assert (response.getStatusCode().equals(HttpStatus.OK));
+
+    }
+
+    private ResponseEntity<String> registerEntitySuccessfully(String username, String password) {
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
+                username,
+                password
+        );
+
+       return restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                String.class
+        );
+    }
 }
