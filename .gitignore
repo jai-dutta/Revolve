@@ -8,3 +8,4 @@ backend/build
 .idea
 backend/.env
 .DS_Store
+*.env
