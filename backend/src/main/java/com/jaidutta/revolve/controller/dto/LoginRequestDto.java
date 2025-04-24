@@ -2,8 +2,10 @@ package com.jaidutta.revolve.controller.dto;
 
 public class LoginRequestDto {
 
-    private final String username;
-    private final String password;
+    private String username;
+    private String password;
+
+    public LoginRequestDto() {}
 
     public LoginRequestDto(String username, String password) {
         this.username = username;
