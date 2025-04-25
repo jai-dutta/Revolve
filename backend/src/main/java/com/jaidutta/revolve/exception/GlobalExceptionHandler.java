@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,7 +27,9 @@ public class GlobalExceptionHandler {
             errors.add(errorDto);
         });
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        ApiResponseDto<Object> apiResponseDto = ApiResponseDto.errors(errors);
+
+        return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NonUniqueUsernameException.class)
