@@ -30,7 +30,6 @@ public class AuthService {
         String password = registerRequestDto.getPassword();
 
         if (isUserRegistered(username)) {
-            // TO-DO: Custom exception here
             throw new NonUniqueUsernameException("User already registered");
         }
 

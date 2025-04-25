@@ -37,34 +37,23 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
-        try {
-            authService.registerUser(registerRequestDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful");
-        } catch (NonUniqueUsernameException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration unsuccessful: " + e.getMessage());
-        }
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) throws NonUniqueUsernameException {
+        authService.registerUser(registerRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful");
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequestDto.getUsername(),
-                            loginRequestDto.getPassword()
-                    ));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequestDto.getUsername(),
+                        loginRequestDto.getPassword()
+                ));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtUtils.generateToken(authentication);
-            AuthDto authDto = new AuthDto(jwt);
+        String jwt = jwtUtils.generateToken(authentication);
+        AuthDto authDto = new AuthDto(jwt);
 
-            return ResponseEntity.ok(authDto);
-
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed: " + e.getMessage());
-        }
+        return ResponseEntity.ok(authDto);
     }
 }
