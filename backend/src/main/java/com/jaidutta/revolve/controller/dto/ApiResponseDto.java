@@ -1,15 +1,15 @@
-// In a new file, e.g., revolve/controller/dto/ApiResponse.java
 package com.jaidutta.revolve.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
-import java.util.ArrayList; // Import ArrayList
+import java.util.ArrayList;
+import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto<T> {
 
     private T data;
-    private List<ErrorDto> errors; // Changed from single ErrorDto to List
+    private List<ErrorDto> errors;
     private String message;
 
     // Private constructor
@@ -54,6 +54,9 @@ public class ApiResponseDto<T> {
         private String field;
         private String message;
 
+
+        private ErrorDto() {}
+
         public ErrorDto(String field, String message) {
             this.field = field;
             this.message = message;
@@ -64,5 +67,6 @@ public class ApiResponseDto<T> {
 
         public String getField() { return field; }
         public String getMessage() { return message; }
+
     }
 }
