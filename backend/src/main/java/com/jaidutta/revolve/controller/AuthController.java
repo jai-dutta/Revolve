@@ -1,5 +1,6 @@
 package com.jaidutta.revolve.controller;
 
+import com.jaidutta.revolve.controller.dto.ApiResponseDto;
 import com.jaidutta.revolve.controller.dto.AuthDto;
 import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +39,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) throws NonUniqueUsernameException {
         authService.registerUser(registerRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful");
+        return ResponseEntity.status(
+                HttpStatus.CREATED)
+                .body(ApiResponseDto.success("Registration successful")
+        );
     }
 
     @PostMapping("/login")
@@ -54,6 +57,6 @@ public class AuthController {
         String jwt = jwtUtils.generateToken(authentication);
         AuthDto authDto = new AuthDto(jwt);
 
-        return ResponseEntity.ok(authDto);
+        return ResponseEntity.ok(ApiResponseDto.success(authDto));
     }
 }
