@@ -1,5 +1,6 @@
 package com.jaidutta.revolve.controller;
 
+import com.jaidutta.revolve.controller.dto.ApiResponseDto;
 import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.repository.UserRepository;
@@ -17,9 +18,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
@@ -35,7 +37,7 @@ public class AuthControllerIntegrationTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl); // Use method reference
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
@@ -48,51 +50,39 @@ public class AuthControllerIntegrationTest {
         userRepository.deleteAll();
     }
 
-
     @Nested
     class RegistrationTests {
 
         @Test
-        void should_returnCreatedStatus_when_registeringNewUser () {
-            RegisterRequestDto registerRequestDto = new RegisterRequestDto(
-                    "integ-test",
-                    "password");
+        void should_returnCreatedStatus_when_registeringNewUser() {
+            ResponseEntity<ApiResponseDto> response = registerUser("username", "password");
 
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    "/api/auth/register",
-                    registerRequestDto,
-                    String.class);
-
-            assert (response.getStatusCode().equals(HttpStatus.CREATED));
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
         }
 
         @Test
-        void should_returnBadRequest_when_registeringDuplicateUsername () {
-            RegisterRequestDto registerRequestDto = new RegisterRequestDto(
-                    "integ-test",
-                    "password");
+        void should_returnBadRequest_when_registeringDuplicateUsername() {
+            ResponseEntity<ApiResponseDto> response = registerUser("username", "password");
 
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    "/api/auth/register",
-                    registerRequestDto,
-                    String.class);
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-            assert (response.getStatusCode().equals(HttpStatus.CREATED));
+            ResponseEntity<ApiResponseDto> response2 = registerUser("username", "password");
 
-            registerRequestDto = new RegisterRequestDto(
-                    "integ-test",
-                    "password");
+            List<ApiResponseDto.ErrorDto> errors = response2.getBody().getErrors();
 
-            response = restTemplate.postForEntity(
-                    "/api/auth/register",
-                    registerRequestDto,
-                    String.class);
+            // Assert that the response code is BAD_REQUEST
+            assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
 
-            assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+            assertEquals(1, errors.size());
+
+            assertEquals("auth.username", errors.getFirst().getField());
+            assertEquals("Username already exists", errors.getFirst().getMessage());
         }
 
+        // Todo: Fix rest of test cases
+        
         @Test
-        void should_returnBadRequest_when_passwordTooShort () {
+        void should_returnBadRequest_when_passwordTooShort() {
             RegisterRequestDto registerRequestDto = new RegisterRequestDto(
                     "integ-test",
                     "pass");
@@ -102,13 +92,13 @@ public class AuthControllerIntegrationTest {
                     registerRequestDto,
                     Map.class);
 
-            assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-            assert (response.getBody() != null && response.getBody().containsValue("Password must be between 8 and 64 " +
-                    "characters"));
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertTrue(response.getBody().containsValue("Password must be between 8 and 64 characters"));
         }
 
         @Test
-        void should_returnBadRequest_when_passwordTooLong () {
+        void should_returnBadRequest_when_passwordTooLong() {
             RegisterRequestDto registerRequestDto = new RegisterRequestDto(
                     "integ-test",
                     "passwordpasswordpasswordpassword-passwordpasswordpasswordpassword"); // 65 chars (max 64)
@@ -118,13 +108,13 @@ public class AuthControllerIntegrationTest {
                     registerRequestDto,
                     Map.class);
 
-            assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-            assert (response.getBody() != null && response.getBody().containsValue("Password must be between 8 and 64 " +
-                    "characters"));
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertTrue(response.getBody().containsValue("Password must be between 8 and 64 characters"));
         }
 
         @Test
-        void should_returnBadRequest_when_usernameTooLong () {
+        void should_returnBadRequest_when_usernameTooLong() {
             RegisterRequestDto registerRequestDto = new RegisterRequestDto(
                     "usernameusernameusernameusername-usernameusernameusernameusername", // 65 chars (max 64)
                     "password"
@@ -136,13 +126,13 @@ public class AuthControllerIntegrationTest {
                     Map.class
             );
 
-            assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-            assert (response.getBody() != null && response.getBody().containsValue("Username must be between 4 and 64 " +
-                    "characters"));
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertTrue(response.getBody().containsValue("Username must be between 4 and 64 characters"));
         }
 
         @Test
-        void should_returnBadRequest_when_usernameTooShort () {
+        void should_returnBadRequest_when_usernameTooShort() {
             RegisterRequestDto registerRequestDto = new RegisterRequestDto(
                     "use",
                     "password"
@@ -154,38 +144,40 @@ public class AuthControllerIntegrationTest {
                     Map.class
             );
 
-            assert (response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-            assert (response.getBody() != null && response.getBody().containsValue("Username must be between 4 and 64 " +
-                    "characters"));
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertTrue(response.getBody().containsValue("Username must be between 4 and 64 characters"));
         }
     }
 
-    @Test
-    void testLoginSuccessful() {
-        assert (registerEntitySuccessfully("username", "password")
-                .getStatusCode().equals(HttpStatus.CREATED));
+    @Nested
+    class LoginTests {
+        @Test
+        void should_returnOkStatus_when_loggingInToAccountThatExists() {
+            assertEquals(HttpStatus.CREATED,
+                    registerUser("username", "password").getStatusCode());
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto("username", "password");
-        ResponseEntity<String> response = restTemplate.postForEntity(
-                "/api/auth/login",
-                loginRequestDto,
-                String.class
-        );
+            LoginRequestDto loginRequestDto = new LoginRequestDto("username", "password");
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    "/api/auth/login",
+                    loginRequestDto,
+                    String.class
+            );
 
-        assert (response.getStatusCode().equals(HttpStatus.OK));
-
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
     }
 
-    private ResponseEntity<String> registerEntitySuccessfully(String username, String password) {
+    private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
         RegisterRequestDto registerRequestDto = new RegisterRequestDto(
                 username,
                 password
         );
 
-       return restTemplate.postForEntity(
+        return restTemplate.postForEntity(
                 "/api/auth/register",
                 registerRequestDto,
-                String.class
+                ApiResponseDto.class
         );
     }
 }
