@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
@@ -26,14 +25,12 @@ public class JwtUtils {
 
     // Method to generate the SecretKey object from the string property
     private SecretKey key() {
-        // Make sure your jwtSecretString is Base64 encoded and long enough for the algorithm
         try {
             byte[] keyBytes = Base64.getDecoder().decode(jwtSecretString);
             return Keys.hmacShaKeyFor(keyBytes);
         } catch (IllegalArgumentException e) {
             logger.error("Invalid JWT secret key: {}", e.getMessage());
-            // Handle error appropriately - maybe throw a specific exception
-            // or ensure the key is validated on startup
+
             throw new RuntimeException("Invalid JWT key configuration", e);
         }
     }

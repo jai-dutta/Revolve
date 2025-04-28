@@ -1,12 +1,10 @@
 package com.jaidutta.revolve.service;
 
-import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.entity.User;
 import com.jaidutta.revolve.exception.NonUniqueUsernameException;
 import com.jaidutta.revolve.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +20,7 @@ public class AuthService {
     }
 
     public boolean isUserRegistered(String username) {
-        return userRepository.findByUsername(username).isPresent();
+        return userRepository.findByUsernameIgnoreCase(username).isPresent();
     }
 
     public void registerUser(RegisterRequestDto registerRequestDto) throws NonUniqueUsernameException {
