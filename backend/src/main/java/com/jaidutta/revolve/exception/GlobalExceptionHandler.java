@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception) {
         ApiResponseDto<String>  apiResponseDto = ApiResponseDto.error(
-                "auth.error", "Invalid authentication");
+                "auth.error", "Incorrect login");
 
         return new ResponseEntity<>(apiResponseDto, HttpStatus.UNAUTHORIZED);
     }
