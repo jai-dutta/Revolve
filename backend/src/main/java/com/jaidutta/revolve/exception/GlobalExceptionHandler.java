@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NonUniqueUsernameException.class)
     public ResponseEntity<Object> handleNonUniqueUsername(NonUniqueUsernameException exception) {
-        ApiResponseDto<Object> apiResponseDto = ApiResponseDto.error("auth.username", "Username " +
+        ApiResponseDto<Object> apiResponseDto = ApiResponseDto.error("username", "Username " +
                 "already exists");
         return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
     }

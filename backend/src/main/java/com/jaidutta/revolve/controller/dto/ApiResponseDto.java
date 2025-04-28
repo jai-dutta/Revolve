@@ -46,7 +46,7 @@ public class ApiResponseDto<T> {
 
 
     public T getData() { return data; }
-    public List<ErrorDto> getErrors() { return errors; } // Returns List
+    public List<ApiResponseDto.ErrorDto> getErrors() { return errors; } // Returns List
     public String getMessage() { return message; }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
