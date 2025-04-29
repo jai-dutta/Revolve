@@ -1,13 +1,11 @@
 package com.jaidutta.revolve.controller;
 
-import com.github.dockerjava.api.model.Link;
 import com.jaidutta.revolve.controller.dto.ApiResponseDto;
-import com.jaidutta.revolve.controller.dto.AuthDto;
 import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.repository.UserRepository;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -26,13 +24,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 public class UserControllerIntegrationTest {
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:16-alpine"
     );
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -40,9 +39,6 @@ public class UserControllerIntegrationTest {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
-
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     @BeforeEach
     void setup() {

@@ -8,7 +8,6 @@ import com.jaidutta.revolve.exception.NonUniqueUsernameException;
 import com.jaidutta.revolve.security.JwtUtils;
 import com.jaidutta.revolve.service.AuthService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping( "/api/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
@@ -41,9 +40,9 @@ public class AuthController {
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) throws NonUniqueUsernameException {
         authService.registerUser(registerRequestDto);
         return ResponseEntity.status(
-                HttpStatus.CREATED)
+                        HttpStatus.CREATED)
                 .body(ApiResponseDto.success("Registration successful")
-        );
+                );
     }
 
     @PostMapping("/login")

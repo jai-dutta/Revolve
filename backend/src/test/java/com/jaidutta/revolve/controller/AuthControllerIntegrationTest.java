@@ -18,21 +18,20 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public class AuthControllerIntegrationTest {
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:16-alpine"
     );
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -41,12 +40,35 @@ public class AuthControllerIntegrationTest {
         registry.add("spring.datasource.password", postgres::getPassword);
     }
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
     @BeforeEach
     void setup() {
         userRepository.deleteAll();
+    }
+
+    private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
+                username,
+                password
+        );
+
+        return restTemplate.postForEntity(
+                "/api/auth/register",
+                registerRequestDto,
+                ApiResponseDto.class
+        );
+    }
+
+    private ResponseEntity<ApiResponseDto> loginUser(String username, String password) {
+        LoginRequestDto loginRequestDto = new LoginRequestDto(
+                username,
+                password
+        );
+
+        return restTemplate.postForEntity(
+                "/api/auth/login",
+                loginRequestDto,
+                ApiResponseDto.class
+        );
     }
 
     @Nested
@@ -158,8 +180,8 @@ public class AuthControllerIntegrationTest {
 
             assertNull(response.getBody().getErrors());
         }
-        @Test
 
+        @Test
         void should_returnOkStatus_when_loggingInToAccountThatExistsWithCapitalisedUsername() {
             registerUser("username", "password");
             ResponseEntity<ApiResponseDto> response = loginUser("USERNAME", "password");
@@ -254,33 +276,6 @@ public class AuthControllerIntegrationTest {
 
 
         }
-    }
-
-
-    private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto(
-                username,
-                password
-        );
-
-        return restTemplate.postForEntity(
-                "/api/auth/register",
-                registerRequestDto,
-                ApiResponseDto.class
-        );
-    }
-
-    private ResponseEntity<ApiResponseDto> loginUser(String username, String password) {
-        LoginRequestDto loginRequestDto = new LoginRequestDto(
-                username,
-                password
-        );
-
-        return restTemplate.postForEntity(
-                "/api/auth/login",
-                loginRequestDto,
-                ApiResponseDto.class
-        );
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.TimeZone;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -20,7 +20,8 @@ public class User {
     @Column(nullable = false)
     private TimeZone timeZone = TimeZone.getDefault();
 
-    protected User() {}
+    protected User() {
+    }
 
     public User(String username, String hashedPassword) {
         this.username = username;
@@ -39,11 +40,14 @@ public class User {
         return this.password;
     }
 
-    public TimeZone getTimeZone() { return this.timeZone; }
-
     public void setPassword(String hashedPassword) {
         this.password = hashedPassword;
     }
 
-    public void setTimeZone(TimeZone timeZone) {}
+    public TimeZone getTimeZone() {
+        return this.timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+    }
 }

@@ -1,9 +1,9 @@
 package com.jaidutta.revolve.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.List;
+
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto<T> {
@@ -45,9 +45,17 @@ public class ApiResponseDto<T> {
     }
 
 
-    public T getData() { return data; }
-    public List<ApiResponseDto.ErrorDto> getErrors() { return errors; } // Returns List
-    public String getMessage() { return message; }
+    public T getData() {
+        return data;
+    }
+
+    public List<ApiResponseDto.ErrorDto> getErrors() {
+        return errors;
+    } // Returns List
+
+    public String getMessage() {
+        return message;
+    }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ErrorDto {
@@ -55,18 +63,25 @@ public class ApiResponseDto<T> {
         private String message;
 
 
-        private ErrorDto() {}
+        private ErrorDto() {
+        }
 
         public ErrorDto(String field, String message) {
             this.field = field;
             this.message = message;
         }
+
         public ErrorDto(String message) {
             this(null, message);
         }
 
-        public String getField() { return field; }
-        public String getMessage() { return message; }
+        public String getField() {
+            return field;
+        }
+
+        public String getMessage() {
+            return message;
+        }
 
     }
 }
