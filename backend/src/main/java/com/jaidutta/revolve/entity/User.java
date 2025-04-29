@@ -39,7 +39,7 @@ public class User {
         return this.password;
     }
 
-    public TimeZone getTimeZone() {}
+    public TimeZone getTimeZone() { return this.timeZone; }
 
     public void setPassword(String hashedPassword) {
         this.password = hashedPassword;
