@@ -33,6 +33,5 @@ public class AuthService {
 
         User newUser = new User(username, passwordEncoder.encode(password));
         userRepository.save(newUser);
-
     }
 }
