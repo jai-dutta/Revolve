@@ -50,7 +50,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception exception) {
         ApiResponseDto<String>  apiResponseDto = ApiResponseDto.error(
-                "server.error", "Server error");
+                "server.error", "Server error ( " + exception.getMessage() + " )");
+        // Todo: Remove context from response - only for development purposes should it be shown.
         return new ResponseEntity<>(apiResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
