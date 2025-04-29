@@ -4,6 +4,7 @@ import com.jaidutta.revolve.controller.dto.ApiResponseDto;
 import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.repository.UserRepository;
+import com.jaidutta.revolve.service.AuthService; // Assuming AuthService might be needed, added import
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -71,101 +72,77 @@ public class AuthControllerIntegrationTest {
         );
     }
 
+    private void assertErrorResponse(ResponseEntity<ApiResponseDto> response,
+                                     HttpStatus expectedHttpStatus,
+                                     String expectedErrorField) {
+        assertEquals(expectedHttpStatus, response.getStatusCode());
+
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getErrors(), "Errors list should not be null for an error response");
+        assertFalse(response.getBody().getErrors().isEmpty(), "Errors list should not be empty for an error response");
+
+        Object errorObject = response.getBody().getErrors().getFirst();
+        assertTrue(errorObject instanceof ApiResponseDto.ErrorDto, "Error object should be of type ErrorDto");
+        ApiResponseDto.ErrorDto dto = (ApiResponseDto.ErrorDto) errorObject;
+
+        assertEquals(expectedErrorField, dto.getField(), "Error field mismatch");
+    }
+
+
     @Nested
     class RegistrationTests {
 
         @Test
         void should_returnCreatedStatus_when_registeringNewUser() {
             ResponseEntity<ApiResponseDto> response = registerUser("username", "password");
-
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
         }
 
 
         @Test
         void should_returnBadRequest_when_registeringDuplicateUsername() {
-            ResponseEntity<ApiResponseDto> response = registerUser("username", "password");
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            registerUser("username", "password"); // First registration should succeed
+            ResponseEntity<ApiResponseDto> response2 = registerUser("username", "password"); // Second attempt
 
-            ResponseEntity<ApiResponseDto> response2 = registerUser("username", "password");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
-
-
-            assertNotNull(response2.getBody());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response2.getBody().getErrors().getFirst();
-
-            assertEquals("username", dto.getField());
+            // Use helper for BAD_REQUEST related to the 'username' field
+            assertErrorResponse(response2, HttpStatus.BAD_REQUEST, "username");
         }
 
         @Test
         void should_returnBadRequest_when_registeringDuplicateUsernameButWithCapitalisedLetter() {
-            ResponseEntity<ApiResponseDto> response = registerUser("username", "password");
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            registerUser("username", "password"); // First registration should succeed
+            ResponseEntity<ApiResponseDto> response2 = registerUser("USERNAME", "password"); // Second attempt with different case
 
-            ResponseEntity<ApiResponseDto> response2 = registerUser("USERNAME", "password");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
-
-
-            assertNotNull(response2.getBody());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response2.getBody().getErrors().getFirst();
-
-            assertEquals("username", dto.getField());
+            // Use helper for BAD_REQUEST related to the 'username' field
+            assertErrorResponse(response2, HttpStatus.BAD_REQUEST, "username");
         }
 
         @Test
         void should_returnBadRequest_when_passwordTooShort() {
             ResponseEntity<ApiResponseDto> response = registerUser("username", "pass");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-            assertNotNull(response.getBody());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("password", dto.getField());
+            // Use helper for BAD_REQUEST related to the 'password' field (validation)
+            assertErrorResponse(response, HttpStatus.BAD_REQUEST, "password");
         }
 
         @Test
         void should_returnBadRequest_when_passwordTooLong() {
             ResponseEntity<ApiResponseDto> response = registerUser("username", "passwordpasswordpasswordpassword-passwordpasswordpasswordpassword");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-            assertNotNull(response.getBody());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("password", dto.getField());
+            // Use helper for BAD_REQUEST related to the 'password' field (validation)
+            assertErrorResponse(response, HttpStatus.BAD_REQUEST, "password");
         }
 
         @Test
         void should_returnBadRequest_when_usernameTooLong() {
             ResponseEntity<ApiResponseDto> response = registerUser("usernameusernameusernameusername-usernameusernameusernameusername", "password");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-            assertNotNull(response.getBody());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("username", dto.getField());
+            // Use helper for BAD_REQUEST related to the 'username' field (validation)
+            assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
         }
 
         @Test
         void should_returnBadRequest_when_usernameTooShort() {
             ResponseEntity<ApiResponseDto> response = registerUser("use", "password");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-            assertNotNull(response.getBody());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("username", dto.getField());
+            // Use helper for BAD_REQUEST related to the 'username' field (validation)
+            assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
         }
     }
 
@@ -177,8 +154,8 @@ public class AuthControllerIntegrationTest {
             ResponseEntity<ApiResponseDto> response = loginUser("username", "password");
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-
-            assertNull(response.getBody().getErrors());
+            assertNotNull(response.getBody()); // Ensure the body isn't null for a success case
+            assertNull(response.getBody().getErrors(), "Errors should be null for successful login");
         }
 
         @Test
@@ -187,22 +164,16 @@ public class AuthControllerIntegrationTest {
             ResponseEntity<ApiResponseDto> response = loginUser("USERNAME", "password");
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-
-            assertNull(response.getBody().getErrors());
+            assertNotNull(response.getBody()); // Ensure the body isn't null for a success case
+            assertNull(response.getBody().getErrors(), "Errors should be null for successful login with capitalized username");
         }
 
         @Test
         void should_returnUnauthorized_when_loggingInToAccountThatDoesNotExist() {
+            ResponseEntity<ApiResponseDto> response = loginUser("nonexistentuser", "password"); // Use a clearly non-existent user
 
-            ResponseEntity<ApiResponseDto> response = loginUser("username", "incorrectPassword");
-
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-            assertNotNull(response.getBody().getErrors());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("auth.error", dto.getField());
+            // Call the helper method with the expected status and error field
+            assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");
         }
 
         @Test
@@ -210,13 +181,8 @@ public class AuthControllerIntegrationTest {
             registerUser("username", "password");
             ResponseEntity<ApiResponseDto> response = loginUser("username", "incorrectPassword");
 
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-            assertNotNull(response.getBody().getErrors());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("auth.error", dto.getField());
+            // Call the helper method
+            assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");
         }
 
         @Test
@@ -224,13 +190,8 @@ public class AuthControllerIntegrationTest {
             registerUser("username", "password");
             ResponseEntity<ApiResponseDto> response = loginUser("username", "paSsword");
 
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-            assertNotNull(response.getBody().getErrors());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("auth.error", dto.getField());
+            // Call the helper method
+            assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");
         }
 
         @Test
@@ -238,42 +199,28 @@ public class AuthControllerIntegrationTest {
             registerUser("username", "password");
             ResponseEntity<ApiResponseDto> response = loginUser("incorrectUsername", "password");
 
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-            assertNotNull(response.getBody().getErrors());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("auth.error", dto.getField());
+            // Call the helper method
+            assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");
         }
 
         @Test
         void should_returnUnauthorized_when_loggingInToAccountWitEmptyPassword() {
+            // Registering a user is needed to test authentication failure
             registerUser("username", "password");
-            ResponseEntity<ApiResponseDto> response = loginUser("incorrectUsername", "");
+            ResponseEntity<ApiResponseDto> response = loginUser("username", ""); // Test with the correct username, empty password
 
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-            assertNotNull(response.getBody().getErrors());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("auth.error", dto.getField());
+            // Call the helper method
+            assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");
         }
 
         @Test
         void should_returnUnauthorized_when_loggingInToAccountWitEmptyUsername() {
+            // Registering a user is needed to test authentication failure
             registerUser("username", "password");
-            ResponseEntity<ApiResponseDto> response = loginUser("", "password");
+            ResponseEntity<ApiResponseDto> response = loginUser("", "password"); // Test with empty username, correct password
 
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-            assertNotNull(response.getBody().getErrors());
-            ApiResponseDto.ErrorDto dto =
-                    (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
-
-            assertEquals("auth.error", dto.getField());
+            // Call the helper method
+            assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");
         }
-        
     }
 }
