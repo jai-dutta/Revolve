@@ -8,9 +8,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto<T> {
 
-    private T data;
-    private List<ErrorDto> errors;
-    private String message;
+    private final T data;
+    private final List<ErrorDto> errors;
+    private final String message;
 
     // Private constructor
     private ApiResponseDto(T data, List<ErrorDto> errors, String message) {
