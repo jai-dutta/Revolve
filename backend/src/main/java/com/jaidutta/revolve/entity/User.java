@@ -2,6 +2,8 @@ package com.jaidutta.revolve.entity;
 
 import jakarta.persistence.*;
 
+import java.util.TimeZone;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -14,6 +16,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private TimeZone timeZone = TimeZone.getDefault();
 
     protected User() {}
 
@@ -34,7 +39,11 @@ public class User {
         return this.password;
     }
 
+    public TimeZone getTimeZone() {}
+
     public void setPassword(String hashedPassword) {
         this.password = hashedPassword;
     }
+
+    public void setTimeZone(TimeZone timeZone) {}
 }
