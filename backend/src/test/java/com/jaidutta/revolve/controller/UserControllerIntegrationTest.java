@@ -5,6 +5,7 @@ import com.jaidutta.revolve.controller.dto.LoginRequestDto;
 import com.jaidutta.revolve.controller.dto.RegisterRequestDto;
 import com.jaidutta.revolve.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,60 +46,6 @@ public class UserControllerIntegrationTest {
         userRepository.deleteAll();
     }
 
-    @Test
-    public void should_returnCurrentUserDetails() {
-        registerUser("username", "password");
-        ResponseEntity<ApiResponseDto> response = loginUser("username", "password");
-        assertInstanceOf(LinkedHashMap.class, response.getBody().getData());
-
-        LinkedHashMap responseBody = (LinkedHashMap) response.getBody().getData();
-
-        String jwtToken = (String) responseBody.get("accessToken");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwtToken);
-
-        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-
-        ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange(
-                "/api/users/me",  // The endpoint URL
-                HttpMethod.GET,
-                requestEntity,
-                ApiResponseDto.class  // The response type
-        );
-
-        assertEquals(HttpStatus.OK, userResponse.getStatusCode());
-        assertNotNull(userResponse.getBody());
-        assertEquals(userResponse.getBody().getMessage(), "Hello username");
-    }
-
-    @Test
-    public void should_returnCurrentUserDetailsWithCapitalisedUsername() {
-        registerUser("uSeRnAmE", "password");
-        ResponseEntity<ApiResponseDto> response = loginUser("username", "password");
-        assertInstanceOf(LinkedHashMap.class, response.getBody().getData());
-
-        LinkedHashMap responseBody = (LinkedHashMap) response.getBody().getData();
-
-        String jwtToken = (String) responseBody.get("accessToken");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwtToken);
-
-        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-
-        ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange(
-                "/api/users/me",  // The endpoint URL
-                HttpMethod.GET,
-                requestEntity,
-                ApiResponseDto.class  // The response type
-        );
-
-        assertEquals(HttpStatus.OK, userResponse.getStatusCode());
-        assertNotNull(userResponse.getBody());
-        assertEquals("Hello uSeRnAmE", userResponse.getBody().getMessage());
-    }
-
     private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
         RegisterRequestDto registerRequestDto = new RegisterRequestDto(
                 username,
@@ -123,5 +70,62 @@ public class UserControllerIntegrationTest {
                 loginRequestDto,
                 ApiResponseDto.class
         );
+    }
+
+    @Nested
+    class meTests {
+        @Test
+        public void should_returnCurrentUserDetails() {
+            registerUser("username", "password");
+            ResponseEntity<ApiResponseDto> response = loginUser("username", "password");
+            assertInstanceOf(LinkedHashMap.class, response.getBody().getData());
+
+            LinkedHashMap responseBody = (LinkedHashMap) response.getBody().getData();
+
+            String jwtToken = (String) responseBody.get("accessToken");
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(jwtToken);
+
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+            ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange(
+                    "/api/users/me",  // The endpoint URL
+                    HttpMethod.GET,
+                    requestEntity,
+                    ApiResponseDto.class  // The response type
+            );
+
+            assertEquals(HttpStatus.OK, userResponse.getStatusCode());
+            assertNotNull(userResponse.getBody());
+            assertEquals(userResponse.getBody().getMessage(), "Hello username");
+        }
+
+        @Test
+        public void should_returnCurrentUserDetailsWithCapitalisedUsername() {
+            registerUser("uSeRnAmE", "password");
+            ResponseEntity<ApiResponseDto> response = loginUser("username", "password");
+            assertInstanceOf(LinkedHashMap.class, response.getBody().getData());
+
+            LinkedHashMap responseBody = (LinkedHashMap) response.getBody().getData();
+
+            String jwtToken = (String) responseBody.get("accessToken");
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(jwtToken);
+
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+            ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange(
+                    "/api/users/me",  // The endpoint URL
+                    HttpMethod.GET,
+                    requestEntity,
+                    ApiResponseDto.class  // The response type
+            );
+
+            assertEquals(HttpStatus.OK, userResponse.getStatusCode());
+            assertNotNull(userResponse.getBody());
+            assertEquals("Hello uSeRnAmE", userResponse.getBody().getMessage());
+        }
     }
 }

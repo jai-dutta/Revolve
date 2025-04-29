@@ -273,9 +273,7 @@ public class AuthControllerIntegrationTest {
                     (ApiResponseDto.ErrorDto) response.getBody().getErrors().getFirst();
 
             assertEquals("auth.error", dto.getField());
-
-
         }
+        
     }
-
 }
