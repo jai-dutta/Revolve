@@ -195,6 +195,13 @@
                 // Use helper for BAD_REQUEST related to the 'username' field (validation)
                 assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
             }
+            @Test
+            void should_returnBadRequest_when_usernameContainsWhitespace() {
+                ResponseEntity<ApiResponseDto> response = registerUser("user name", "password");
+
+                // Use helper for BAD_REQUEST related to the 'username' field (validation)
+                assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
+            }
         }
 
         @Nested
