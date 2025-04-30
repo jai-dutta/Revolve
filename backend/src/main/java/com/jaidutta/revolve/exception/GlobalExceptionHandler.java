@@ -46,6 +46,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponseDto, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(RecurringActivityNotFoundException.class)
+    public ResponseEntity<Object> handleRecurringActivityNotFoundException(RecurringActivityNotFoundException exception) {
+        ApiResponseDto<String> apiResponseDto = ApiResponseDto.error(
+                "activity.find", "Activity not found");
+
+        return new ResponseEntity<>(apiResponseDto, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TooManyRecurringActivitiesRegisteredByUserException.class)
+    public ResponseEntity<Object> handleTooManyRecurringActivitiesRegisteredByUserException(TooManyRecurringActivitiesRegisteredByUserException exception) {
+        ApiResponseDto<String> apiResponseDto = ApiResponseDto.error(
+                "activity.add", "Too many recurring activities currently registered");
+
+        return new ResponseEntity<>(apiResponseDto, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception exception) {
         ApiResponseDto<String> apiResponseDto = ApiResponseDto.error(
@@ -53,4 +69,5 @@ public class GlobalExceptionHandler {
         // Todo: Remove context from response - only for development purposes should it be shown.
         return new ResponseEntity<>(apiResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }

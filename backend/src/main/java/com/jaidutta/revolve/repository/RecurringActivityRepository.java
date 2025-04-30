@@ -13,4 +13,5 @@ public interface RecurringActivityRepository extends JpaRepository<RecurringActi
     List<RecurringActivity> findAllByUser(User user);
 
     Optional<RecurringActivity> findByIdAndUser(Long id, User user);
+
 }

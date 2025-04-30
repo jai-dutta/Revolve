@@ -20,6 +20,9 @@ public class User {
     @Column(nullable = false)
     private TimeZone timeZone = TimeZone.getDefault();
 
+    @Column(nullable = false)
+    private int eventsCurrentlyRegistered = 0;
+
     protected User() {
     }
 
@@ -40,14 +43,21 @@ public class User {
         return this.password;
     }
 
-    public void setPassword(String hashedPassword) {
-        this.password = hashedPassword;
-    }
-
     public TimeZone getTimeZone() {
         return this.timeZone;
     }
 
+    public int getEventsCurrentlyRegistered() { return this.eventsCurrentlyRegistered; }
+
+    public void setPassword(String hashedPassword) {
+        this.password = hashedPassword;
+    }
+
     public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public void setEventsCurrentlyRegistered(int eventsCurrentlyRegistered) {
+        this.eventsCurrentlyRegistered = eventsCurrentlyRegistered;
     }
 }

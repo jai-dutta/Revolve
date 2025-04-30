@@ -1,6 +1,7 @@
 package com.jaidutta.revolve.controller.dto;
 
 import com.jaidutta.revolve.definitions.ActivityType;
+import com.jaidutta.revolve.entity.RecurringActivity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,6 +13,8 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 public class RecurringActivityDto {
+
+    private Long id;
 
     @NotBlank
     @Size(min = 1, max = 64, message = "Course name must be between 1 and 64 characters")
@@ -42,6 +45,20 @@ public class RecurringActivityDto {
         this.durationMinutes = durationMinutes;
     }
 
+    public static RecurringActivityDto mapToRecurringActivity(RecurringActivity recurringActivity) {
+        RecurringActivityDto recurringActivityDto = new RecurringActivityDto();
+        recurringActivityDto.setId(recurringActivity.getId());
+        recurringActivityDto.setCourseName(recurringActivity.getCourseName());
+        recurringActivityDto.setActivityName(recurringActivity.getActivityName());
+        recurringActivityDto.setActivityType(recurringActivity.getActivityType());
+        recurringActivityDto.setDayOfWeek(recurringActivity.getDayOfWeek());
+        recurringActivityDto.setStartTime(recurringActivity.getStartTime());
+        recurringActivityDto.setDurationMinutes(recurringActivity.getDurationMinutes());
+        return recurringActivityDto;
+    }
+
+    public Long getId() {
+        return id; }
     public String getCourseName() {
         return courseName;
     }
@@ -61,6 +78,7 @@ public class RecurringActivityDto {
         return durationMinutes;
     }
 
+    public void setId(Long id) { this.id = id; }
     public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
