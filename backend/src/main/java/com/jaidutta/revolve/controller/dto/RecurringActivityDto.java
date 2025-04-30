@@ -1,8 +1,9 @@
-package com.jaidutta.revolve.entity;
+package com.jaidutta.revolve.controller.dto;
 
-import com.jaidutta.revolve.controller.dto.RecurringActivityDto;
 import com.jaidutta.revolve.definitions.ActivityType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,43 +11,29 @@ import jakarta.validation.constraints.Size;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "recurring_activities")
-public class RecurringActivity {
+public class RecurringActivityDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @Column(nullable = false)
+    @NotBlank
+    @Size(min = 1, max = 64, message = "Course name must be between 1 and 64 characters")
     private String courseName;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Size(min = 1, max = 64, message = "Activity name must be between 1 and 64 characters")
     private String activityName;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ActivityType activityType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @NotNull
     private DayOfWeek dayOfWeek;
 
-    @Column(nullable = false)
     private LocalTime startTime;
 
-    @Column(nullable = false)
     private Integer durationMinutes;
 
-    protected RecurringActivity() {}
+    public RecurringActivityDto() {}
 
-    public RecurringActivity(User user, String courseName, String activityName, ActivityType activityType, DayOfWeek dayOfWeek, LocalTime startTime, Integer durationMinutes) {
-        this.user = user;
+    public RecurringActivityDto(String courseName, String activityName, ActivityType activityType, DayOfWeek dayOfWeek, LocalTime startTime, Integer durationMinutes) {
         this.courseName = courseName;
         this.activityName = activityName;
         this.activityType = activityType;
@@ -55,70 +42,41 @@ public class RecurringActivity {
         this.durationMinutes = durationMinutes;
     }
 
-    // Getters
-    public Long getId() {
-        return this.id;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
     public String getCourseName() {
-        return this.courseName;
+        return courseName;
     }
-
     public String getActivityName() {
-        return this.activityName;
+        return activityName;
     }
-
     public ActivityType getActivityType() {
-        return this.activityType;
+        return activityType;
     }
-
     public DayOfWeek getDayOfWeek() {
-        return this.dayOfWeek;
+        return dayOfWeek;
     }
-
     public LocalTime getStartTime() {
-        return this.startTime;
+        return startTime;
     }
-
     public Integer getDurationMinutes() {
-        return this.durationMinutes;
-    }
-
-    // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+        return durationMinutes;
     }
 
     public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
-
     public void setActivityName(String activityName) {
         this.activityName = activityName;
     }
-
     public void setActivityType(ActivityType activityType) {
         this.activityType = activityType;
     }
-
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
-
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
-
     public void setDurationMinutes(Integer durationMinutes) {
         this.durationMinutes = durationMinutes;
     }
-
 }
