@@ -38,7 +38,6 @@ public class ApiResponseDto<T> {
     public static <T> ApiResponseDto<T> errors(List<ErrorDto> errors) {
         return new ApiResponseDto<>(null, errors, null);
     }
-
     // Static factory for a simple single error message
     public static <T> ApiResponseDto<T> error(String field, String message) {
         return new ApiResponseDto<>(null, List.of(new ErrorDto(field, message)), null);
