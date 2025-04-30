@@ -2,12 +2,15 @@ package com.jaidutta.revolve.controller.dto;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RegisterRequestDto {
 
     @NotBlank
     @Size(min = 4, max = 64, message = "Username must be between 4 and 64 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Username must only contain alphanumeric " +
+            "characters, and underscores \"_\" and hyphens \"-\" ")
     private String username;
 
     @NotBlank
