@@ -1,8 +1,8 @@
 package com.jaidutta.revolve.controller.dto;
 
 public class AuthDto {
-    private String accessToken;
     private final String tokenType = "Bearer";
+    private String accessToken;
 
     public AuthDto() {
     }

@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
-public class AuthService {
+@Service public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -23,7 +22,8 @@ public class AuthService {
         return userRepository.findByUsernameIgnoreCase(username).isPresent();
     }
 
-    public void registerUser(RegisterRequestDto registerRequestDto) throws NonUniqueUsernameException {
+    public void registerUser(RegisterRequestDto registerRequestDto)
+            throws NonUniqueUsernameException {
         String username = registerRequestDto.getUsername();
         String password = registerRequestDto.getPassword();
 

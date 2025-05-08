@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponseDto<T> {
+@JsonInclude(JsonInclude.Include.NON_NULL) public class ApiResponseDto<T> {
 
     private final T data;
     private final List<ErrorDto> errors;
@@ -15,7 +14,8 @@ public class ApiResponseDto<T> {
     // Private constructor
     private ApiResponseDto(T data, List<ErrorDto> errors, String message) {
         this.data = data;
-        this.errors = (errors != null && !errors.isEmpty()) ? new ArrayList<>(errors) : null;
+        this.errors =
+                (errors != null && !errors.isEmpty()) ? new ArrayList<>(errors) : null;
         this.message = message;
     }
 
@@ -38,6 +38,7 @@ public class ApiResponseDto<T> {
     public static <T> ApiResponseDto<T> errors(List<ErrorDto> errors) {
         return new ApiResponseDto<>(null, errors, null);
     }
+
     // Static factory for a simple single error message
     public static <T> ApiResponseDto<T> error(String field, String message) {
         return new ApiResponseDto<>(null, List.of(new ErrorDto(field, message)), null);
@@ -56,8 +57,7 @@ public class ApiResponseDto<T> {
         return message;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class ErrorDto {
+    @JsonInclude(JsonInclude.Include.NON_NULL) public static class ErrorDto {
         private String field;
         private String message;
 

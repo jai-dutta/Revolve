@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.TimeZone;
 
-@Entity
-@Table(name = "users")
-public class User {
+@Entity @Table(name = "users") public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,19 +41,19 @@ public class User {
         return this.password;
     }
 
-    public TimeZone getTimeZone() {
-        return this.timeZone;
-    }
-
-    public int getEventsCurrentlyRegistered() { return this.eventsCurrentlyRegistered; }
-
     public void setPassword(String hashedPassword) {
         this.password = hashedPassword;
+    }
+
+    public TimeZone getTimeZone() {
+        return this.timeZone;
     }
 
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
     }
+
+    public int getEventsCurrentlyRegistered() {return this.eventsCurrentlyRegistered;}
 
     public void setEventsCurrentlyRegistered(int eventsCurrentlyRegistered) {
         this.eventsCurrentlyRegistered = eventsCurrentlyRegistered;

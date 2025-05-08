@@ -1,18 +1,13 @@
 package com.jaidutta.revolve.entity;
 
-import com.jaidutta.revolve.controller.dto.RecurringActivityDto;
 import com.jaidutta.revolve.definitions.ActivityType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "recurring_activities")
-public class RecurringActivity {
+@Entity @Table(name = "recurring_activities") public class RecurringActivity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +40,9 @@ public class RecurringActivity {
 
     protected RecurringActivity() {}
 
-    public RecurringActivity(User user, String courseName, String activityName, ActivityType activityType, DayOfWeek dayOfWeek, LocalTime startTime, Integer durationMinutes) {
+    public RecurringActivity(User user, String courseName, String activityName,
+                             ActivityType activityType, DayOfWeek dayOfWeek,
+                             LocalTime startTime, Integer durationMinutes) {
         this.user = user;
         this.courseName = courseName;
         this.activityName = activityName;
@@ -60,61 +57,61 @@ public class RecurringActivity {
         return this.id;
     }
 
-    public User getUser() {
-        return this.user;
-    }
-
-    public String getCourseName() {
-        return this.courseName;
-    }
-
-    public String getActivityName() {
-        return this.activityName;
-    }
-
-    public ActivityType getActivityType() {
-        return this.activityType;
-    }
-
-    public DayOfWeek getDayOfWeek() {
-        return this.dayOfWeek;
-    }
-
-    public LocalTime getStartTime() {
-        return this.startTime;
-    }
-
-    public Integer getDurationMinutes() {
-        return this.durationMinutes;
-    }
-
     // Setters
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return this.user;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
+    public String getCourseName() {
+        return this.courseName;
+    }
+
     public void setCourseName(String courseName) {
         this.courseName = courseName;
+    }
+
+    public String getActivityName() {
+        return this.activityName;
     }
 
     public void setActivityName(String activityName) {
         this.activityName = activityName;
     }
 
+    public ActivityType getActivityType() {
+        return this.activityType;
+    }
+
     public void setActivityType(ActivityType activityType) {
         this.activityType = activityType;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return this.dayOfWeek;
     }
 
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
 
+    public LocalTime getStartTime() {
+        return this.startTime;
+    }
+
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
+    }
+
+    public Integer getDurationMinutes() {
+        return this.durationMinutes;
     }
 
     public void setDurationMinutes(Integer durationMinutes) {

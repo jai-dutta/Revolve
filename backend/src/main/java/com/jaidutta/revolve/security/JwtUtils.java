@@ -46,13 +46,10 @@ public class JwtUtils {
         logger.info("Generating token for user: {}", username);
 
         // Build the JWT
-        return Jwts.builder()
-                .subject(username)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                // Correct way: Pass the SecretKey and the desired Algorithm enum
-                .signWith(key()) // Or HS256, HS384
-                .compact();
+        return Jwts.builder().subject(username).issuedAt(now).expiration(expiryDate)
+                   // Correct way: Pass the SecretKey and the desired Algorithm enum
+                   .signWith(key()) // Or HS256, HS384
+                   .compact();
     }
 
     boolean validateToken(String token) {
@@ -78,7 +75,11 @@ public class JwtUtils {
     }
 
     String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser().verifyWith(key()).build().parseSignedClaims(token).getPayload();
+        Claims claims = Jwts.parser()
+                            .verifyWith(key())
+                            .build()
+                            .parseSignedClaims(token)
+                            .getPayload();
         return claims.getSubject();
     }
 

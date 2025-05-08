@@ -5,7 +5,8 @@ public class TooManyRecurringActivitiesRegisteredByUserException extends Excepti
         super(message);
     }
 
-    public TooManyRecurringActivitiesRegisteredByUserException(String message, Throwable cause) {
+    public TooManyRecurringActivitiesRegisteredByUserException(String message,
+                                                               Throwable cause) {
         super(message, cause);
     }
 }

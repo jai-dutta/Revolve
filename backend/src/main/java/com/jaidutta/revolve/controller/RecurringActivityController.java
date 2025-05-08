@@ -19,38 +19,40 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/recurring-activities")
+@RestController @RequestMapping("/api/recurring-activities")
 public class RecurringActivityController {
     private final RecurringActivityService recurringActivityService;
     private final UserService userService;
 
 
     @Autowired
-    public RecurringActivityController(RecurringActivityService recurringActivityService, UserService userService) {
+    public RecurringActivityController(RecurringActivityService recurringActivityService,
+                                       UserService userService) {
         this.recurringActivityService = recurringActivityService;
         this.userService = userService;
     }
 
-    @PostMapping("/create")
-   public ResponseEntity<?> createRecurringActivity(@Valid @RequestBody RecurringActivityDto recurringActivityDto)
-                                                    throws TooManyRecurringActivitiesRegisteredByUserException {
+    @PostMapping("/create") public ResponseEntity<?> createRecurringActivity(
+            @Valid @RequestBody RecurringActivityDto recurringActivityDto)
+            throws TooManyRecurringActivitiesRegisteredByUserException {
         User user = getCurrentUserEntity();
-        RecurringActivity savedActivity =
-                this.recurringActivityService.createRecurringActivity(user,
-                                                                      recurringActivityDto);
-        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(savedActivity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(responseDto));
+        RecurringActivity savedActivity = this.recurringActivityService.createRecurringActivity(
+                user, recurringActivityDto);
+        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(
+                savedActivity);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(ApiResponseDto.success(responseDto));
     }
 
-    @GetMapping
-    public ResponseEntity<?> readAllRecurringActivities() {
+    @GetMapping public ResponseEntity<?> readAllRecurringActivities() {
         User user = getCurrentUserEntity();
-        List<RecurringActivity> activities = this.recurringActivityService.getRecurringActivitiesByUser(user);
+        List<RecurringActivity> activities = this.recurringActivityService.getRecurringActivitiesByUser(
+                user);
         List<RecurringActivityDto> activityResponseDtos = new ArrayList<>();
 
         for (RecurringActivity recurringActivity : activities) {
-            activityResponseDtos.add(RecurringActivityDto.mapToRecurringActivity(recurringActivity));
+            activityResponseDtos.add(
+                    RecurringActivityDto.mapToRecurringActivity(recurringActivity));
         }
         return ResponseEntity.ok().body(ApiResponseDto.success(activityResponseDtos));
     }
@@ -58,20 +60,20 @@ public class RecurringActivityController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateRecurringActivity(@PathVariable Long id,
                                                      @Valid @RequestBody RecurringActivityDto recurringActivityDto)
-                                                     throws RecurringActivityNotFoundException {
+            throws RecurringActivityNotFoundException {
         User user = getCurrentUserEntity();
-        RecurringActivity updatedActivity =
-                this.recurringActivityService.updateRecurringActivityByIdAndUser(id,
-                                                                                 user,
-                                                                                 recurringActivityDto);
+        RecurringActivity updatedActivity = this.recurringActivityService.updateRecurringActivityByIdAndUser(
+                id, user, recurringActivityDto);
 
-        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(updatedActivity);
+        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(
+                updatedActivity);
 
-        return  ResponseEntity.ok().body(ApiResponseDto.success(responseDto));
+        return ResponseEntity.ok().body(ApiResponseDto.success(responseDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRecurringActivity(@PathVariable Long id) throws RecurringActivityNotFoundException {
+    public ResponseEntity<?> deleteRecurringActivity(@PathVariable Long id)
+            throws RecurringActivityNotFoundException {
         User user = getCurrentUserEntity();
         this.recurringActivityService.deleteRecurringActivityByIdAndUser(id, user);
 
@@ -80,7 +82,8 @@ public class RecurringActivityController {
 
 
     private User getCurrentUserEntity() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext()
+                                                             .getAuthentication();
 
         return this.userService.findUserByUsername(authentication.getName());
     }

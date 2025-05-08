@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface RecurringActivityRepository extends JpaRepository<RecurringActivity, Long> {
+@Repository public interface RecurringActivityRepository
+        extends JpaRepository<RecurringActivity, Long> {
     List<RecurringActivity> findAllByUser(User user);
 
     Optional<RecurringActivity> findByIdAndUser(Long id, User user);

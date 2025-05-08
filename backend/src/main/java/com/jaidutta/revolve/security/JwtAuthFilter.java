@@ -19,8 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 
-@Component
-public class JwtAuthFilter extends OncePerRequestFilter {
+@Component public class JwtAuthFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
 
     private final JwtUtils jwtUtils;
@@ -33,10 +32,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    @Override protected void doFilterInternal(HttpServletRequest request,
+                                              HttpServletResponse response,
+                                              FilterChain filterChain)
             throws ServletException, IOException {
 
         try {
@@ -51,20 +49,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 // Create authentication token (user is already authenticated via JWT)
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null, // Credentials aren't needed here as JWT is the proof
-                                userDetails.getAuthorities()); // Get authorities if defined
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null,
+                        // Credentials aren't needed here as JWT is the proof
+                        userDetails.getAuthorities()); // Get authorities if defined
 
                 // Set details for the authentication token
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
 
                 // Set the authentication object in Spring Security Context
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.debug("Set Authentication in SecurityContextHolder for user '{}'", username);
+                logger.debug("Set Authentication in SecurityContextHolder for user '{}'",
+                             username);
             } else {
-                logger.debug("JWT Token is null, invalid, or expired. No authentication set.");
+                logger.debug(
+                        "JWT Token is null, invalid, or expired. No authentication set.");
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());
