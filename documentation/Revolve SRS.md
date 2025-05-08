@@ -150,7 +150,7 @@ TODO
 
 ## 5. Additional Notes
 
-- Personal project with possible collaboration from select friends
+- Personal project with possible collaboration from friends
 - Non-commercial use
 - Focus on simplicity and usability over complex features
 
