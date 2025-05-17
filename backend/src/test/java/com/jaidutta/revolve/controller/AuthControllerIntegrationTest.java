@@ -42,8 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
         userRepository.deleteAll();
     }
 
-    private ResponseEntity<ApiResponseDto> registerUser(String username,
-                                                        String password) {
+    private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
         RegisterRequestDto registerRequestDto = new RegisterRequestDto(username,
                                                                        password);
 
@@ -58,9 +57,7 @@ import static org.junit.jupiter.api.Assertions.*;
                                           ApiResponseDto.class);
     }
 
-    private void assertErrorResponse(ResponseEntity<ApiResponseDto> response,
-                                     HttpStatus expectedHttpStatus,
-                                     String expectedErrorField) {
+    private void assertErrorResponse(ResponseEntity<ApiResponseDto> response, HttpStatus expectedHttpStatus, String expectedErrorField) {
         assertEquals(expectedHttpStatus, response.getStatusCode());
 
         assertNotNull(response.getBody());

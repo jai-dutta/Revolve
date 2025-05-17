@@ -28,8 +28,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         return new BCryptPasswordEncoder();
     }
 
-    @Bean public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

@@ -25,16 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    @Autowired public AuthController(AuthService authService,
-                                     AuthenticationManager authenticationManager,
-                                     JwtUtils jwtUtils) {
+    @Autowired
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
     }
 
-    @PostMapping("/register") public ResponseEntity<?> register(
-            @Valid @RequestBody RegisterRequestDto registerRequestDto)
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto)
             throws NonUniqueUsernameException {
         authService.registerUser(registerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)

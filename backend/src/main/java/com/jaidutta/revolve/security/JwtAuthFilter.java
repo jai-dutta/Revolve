@@ -32,9 +32,8 @@ import java.io.IOException;
     }
 
 
-    @Override protected void doFilterInternal(HttpServletRequest request,
-                                              HttpServletResponse response,
-                                              FilterChain filterChain)
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         try {

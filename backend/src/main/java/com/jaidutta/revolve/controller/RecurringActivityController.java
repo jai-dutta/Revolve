@@ -26,14 +26,13 @@ public class RecurringActivityController {
 
 
     @Autowired
-    public RecurringActivityController(RecurringActivityService recurringActivityService,
-                                       UserService userService) {
+    public RecurringActivityController(RecurringActivityService recurringActivityService, UserService userService) {
         this.recurringActivityService = recurringActivityService;
         this.userService = userService;
     }
 
-    @PostMapping("/create") public ResponseEntity<?> createRecurringActivity(
-            @Valid @RequestBody RecurringActivityDto recurringActivityDto)
+    @PostMapping("/create")
+    public ResponseEntity<?> createRecurringActivity(@Valid @RequestBody RecurringActivityDto recurringActivityDto)
             throws TooManyRecurringActivitiesRegisteredByUserException {
         User user = getCurrentUserEntity();
         RecurringActivity savedActivity = this.recurringActivityService.createRecurringActivity(
@@ -58,8 +57,7 @@ public class RecurringActivityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateRecurringActivity(@PathVariable Long id,
-                                                     @Valid @RequestBody RecurringActivityDto recurringActivityDto)
+    public ResponseEntity<?> updateRecurringActivity(@PathVariable Long id, @Valid @RequestBody RecurringActivityDto recurringActivityDto)
             throws RecurringActivityNotFoundException {
         User user = getCurrentUserEntity();
         RecurringActivity updatedActivity = this.recurringActivityService.updateRecurringActivityByIdAndUser(

@@ -40,9 +40,7 @@ import java.time.LocalTime;
 
     protected RecurringActivity() {}
 
-    public RecurringActivity(User user, String courseName, String activityName,
-                             ActivityType activityType, DayOfWeek dayOfWeek,
-                             LocalTime startTime, Integer durationMinutes) {
+    public RecurringActivity(User user, String courseName, String activityName, ActivityType activityType, DayOfWeek dayOfWeek, LocalTime startTime, Integer durationMinutes) {
         this.user = user;
         this.courseName = courseName;
         this.activityName = activityName;

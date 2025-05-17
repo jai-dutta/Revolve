@@ -33,9 +33,7 @@ public class RecurringActivityDto {
 
     public RecurringActivityDto() {}
 
-    public RecurringActivityDto(String courseName, String activityName,
-                                ActivityType activityType, DayOfWeek dayOfWeek,
-                                LocalTime startTime, Integer durationMinutes) {
+    public RecurringActivityDto(String courseName, String activityName, ActivityType activityType, DayOfWeek dayOfWeek, LocalTime startTime, Integer durationMinutes) {
         this.courseName = courseName;
         this.activityName = activityName;
         this.activityType = activityType;
@@ -44,8 +42,7 @@ public class RecurringActivityDto {
         this.durationMinutes = durationMinutes;
     }
 
-    public static RecurringActivityDto mapToRecurringActivity(
-            RecurringActivity recurringActivity) {
+    public static RecurringActivityDto mapToRecurringActivity(RecurringActivity recurringActivity) {
         RecurringActivityDto recurringActivityDto = new RecurringActivityDto();
         recurringActivityDto.setId(recurringActivity.getId());
         recurringActivityDto.setCourseName(recurringActivity.getCourseName());

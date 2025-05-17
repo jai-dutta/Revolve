@@ -43,8 +43,7 @@ import static org.junit.jupiter.api.Assertions.*;
         userRepository.deleteAll();
     }
 
-    private ResponseEntity<ApiResponseDto> registerUser(String username,
-                                                        String password) {
+    private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
         RegisterRequestDto registerRequestDto = new RegisterRequestDto(username,
                                                                        password);
 

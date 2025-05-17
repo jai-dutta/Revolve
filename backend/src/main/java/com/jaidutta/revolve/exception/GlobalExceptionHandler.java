@@ -15,8 +15,7 @@ import java.util.ArrayList;
     // Todo: add logging
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(
-            MethodArgumentNotValidException exception) {
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException exception) {
         ArrayList<ApiResponseDto.ErrorDto> errors = new ArrayList<>();
 
         exception.getBindingResult().getFieldErrors().forEach(fieldError -> {
@@ -33,8 +32,7 @@ import java.util.ArrayList;
     }
 
     @ExceptionHandler(NonUniqueUsernameException.class)
-    public ResponseEntity<Object> handleNonUniqueUsername(
-            NonUniqueUsernameException exception) {
+    public ResponseEntity<Object> handleNonUniqueUsername(NonUniqueUsernameException exception) {
         ApiResponseDto<Object> apiResponseDto = ApiResponseDto.error("username",
                                                                      "Username " +
                                                                      "already exists");
@@ -42,8 +40,7 @@ import java.util.ArrayList;
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Object> handleAuthenticationException(
-            AuthenticationException exception) {
+    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception) {
         ApiResponseDto<String> apiResponseDto = ApiResponseDto.error("auth.error",
                                                                      "Incorrect login");
 
@@ -51,8 +48,7 @@ import java.util.ArrayList;
     }
 
     @ExceptionHandler(RecurringActivityNotFoundException.class)
-    public ResponseEntity<Object> handleRecurringActivityNotFoundException(
-            RecurringActivityNotFoundException exception) {
+    public ResponseEntity<Object> handleRecurringActivityNotFoundException(RecurringActivityNotFoundException exception) {
         ApiResponseDto<String> apiResponseDto = ApiResponseDto.error("activity.find",
                                                                      "Activity not found");
 
@@ -60,8 +56,7 @@ import java.util.ArrayList;
     }
 
     @ExceptionHandler(TooManyRecurringActivitiesRegisteredByUserException.class)
-    public ResponseEntity<Object> handleTooManyRecurringActivitiesRegisteredByUserException(
-            TooManyRecurringActivitiesRegisteredByUserException exception) {
+    public ResponseEntity<Object> handleTooManyRecurringActivitiesRegisteredByUserException(TooManyRecurringActivitiesRegisteredByUserException exception) {
         ApiResponseDto<String> apiResponseDto = ApiResponseDto.error("activity.add",
                                                                      "Too many recurring activities currently registered");
 

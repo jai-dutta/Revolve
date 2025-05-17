@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController @RequestMapping("/api/users") public class UserController {
 
     @GetMapping("/me") public ResponseEntity<?> getCurrentUser() {
+
         Authentication authentication = SecurityContextHolder.getContext()
                                                              .getAuthentication();
+
         if (authentication.getPrincipal() instanceof UserDetails userDetails) {
             String username = userDetails.getUsername();
             return ResponseEntity.ok(ApiResponseDto.success("Hello " + username));
+
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body(ApiResponseDto.error("server.error",

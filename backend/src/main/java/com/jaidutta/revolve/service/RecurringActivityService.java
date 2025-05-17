@@ -19,15 +19,14 @@ import java.util.Optional;
     private final RecurringActivityRepository recurringActivityRepository;
     private final UserRepository userRepository;
 
-    @Autowired public RecurringActivityService(
-            RecurringActivityRepository recurringActivityRepository,
-            UserRepository userRepository) {
+    @Autowired
+    public RecurringActivityService(RecurringActivityRepository recurringActivityRepository, UserRepository userRepository) {
         this.recurringActivityRepository = recurringActivityRepository;
         this.userRepository = userRepository;
     }
 
-    @Transactional public RecurringActivity createRecurringActivity(User user,
-                                                                    RecurringActivityDto recurringDto)
+    @Transactional
+    public RecurringActivity createRecurringActivity(User user, RecurringActivityDto recurringDto)
             throws TooManyRecurringActivitiesRegisteredByUserException {
         // Todo: add config instead of magic number 20
         if (user.getEventsCurrentlyRegistered() > 20) {
@@ -51,8 +50,7 @@ import java.util.Optional;
         return recurringActivity;
     }
 
-    public Optional<RecurringActivity> getRecurringActivityByIdAndUser(Long id,
-                                                                       User user) {
+    public Optional<RecurringActivity> getRecurringActivityByIdAndUser(Long id, User user) {
         return this.recurringActivityRepository.findByIdAndUser(id, user);
     }
 
@@ -74,12 +72,11 @@ import java.util.Optional;
     }
 
     @Transactional
-    public RecurringActivity updateRecurringActivityByIdAndUser(Long id, User user,
-                                                                RecurringActivityDto recurringDto)
+    public RecurringActivity updateRecurringActivityByIdAndUser(Long id, User user, RecurringActivityDto recurringDto)
             throws RecurringActivityNotFoundException {
         RecurringActivity existingActivity = getRecurringActivityByIdAndUser(id,
-                                                                             user)
-                .orElseThrow(() -> new RecurringActivityNotFoundException(
+                                                                             user).orElseThrow(
+                () -> new RecurringActivityNotFoundException(
                         "Activity " + id + " not found"));
 
         existingActivity.setCourseName(recurringDto.getCourseName());
