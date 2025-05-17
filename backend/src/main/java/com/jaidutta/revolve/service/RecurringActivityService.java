@@ -60,8 +60,7 @@ import java.util.Optional;
 
     @Transactional public void deleteRecurringActivityByIdAndUser(Long id, User user)
             throws RecurringActivityNotFoundException {
-        Optional<RecurringActivity> activityToDelete = getRecurringActivityByIdAndUser(id,
-                                                                                       user);
+        Optional<RecurringActivity> activityToDelete = getRecurringActivityByIdAndUser(id, user);
         if (activityToDelete.isPresent()) {
             recurringActivityRepository.deleteById(id);
             user.setEventsCurrentlyRegistered(user.getEventsCurrentlyRegistered() - 1);
@@ -74,10 +73,8 @@ import java.util.Optional;
     @Transactional
     public RecurringActivity updateRecurringActivityByIdAndUser(Long id, User user, RecurringActivityDto recurringDto)
             throws RecurringActivityNotFoundException {
-        RecurringActivity existingActivity = getRecurringActivityByIdAndUser(id,
-                                                                             user).orElseThrow(
-                () -> new RecurringActivityNotFoundException(
-                        "Activity " + id + " not found"));
+        RecurringActivity existingActivity = getRecurringActivityByIdAndUser(id, user).orElseThrow(
+                () -> new RecurringActivityNotFoundException("Activity " + id + " not found"));
 
         existingActivity.setCourseName(recurringDto.getCourseName());
         existingActivity.setActivityName(recurringDto.getActivityName());

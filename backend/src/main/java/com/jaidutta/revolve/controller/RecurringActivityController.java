@@ -39,8 +39,7 @@ public class RecurringActivityController {
                 user, recurringActivityDto);
         RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(
                 savedActivity);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(ApiResponseDto.success(responseDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(responseDto));
     }
 
     @GetMapping public ResponseEntity<?> readAllRecurringActivities() {
@@ -69,8 +68,7 @@ public class RecurringActivityController {
         return ResponseEntity.ok().body(ApiResponseDto.success(responseDto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRecurringActivity(@PathVariable Long id)
+    @DeleteMapping("/{id}") public ResponseEntity<?> deleteRecurringActivity(@PathVariable Long id)
             throws RecurringActivityNotFoundException {
         User user = getCurrentUserEntity();
         this.recurringActivityService.deleteRecurringActivityByIdAndUser(id, user);
@@ -80,8 +78,7 @@ public class RecurringActivityController {
 
 
     private User getCurrentUserEntity() {
-        Authentication authentication = SecurityContextHolder.getContext()
-                                                             .getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return this.userService.findUserByUsername(authentication.getName());
     }

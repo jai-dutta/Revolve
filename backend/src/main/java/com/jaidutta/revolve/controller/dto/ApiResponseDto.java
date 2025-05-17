@@ -14,8 +14,7 @@ import java.util.List;
     // Private constructor
     private ApiResponseDto(T data, List<ErrorDto> errors, String message) {
         this.data = data;
-        this.errors =
-                (errors != null && !errors.isEmpty()) ? new ArrayList<>(errors) : null;
+        this.errors = (errors != null && !errors.isEmpty()) ? new ArrayList<>(errors) : null;
         this.message = message;
     }
 

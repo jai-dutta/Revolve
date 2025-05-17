@@ -20,19 +20,17 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers public class AuthControllerIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) @Testcontainers
+public class AuthControllerIntegrationTest {
 
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:16-alpine");
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
+    @DynamicPropertySource static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
@@ -43,8 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
     }
 
     private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto(username,
-                                                                       password);
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(username, password);
 
         return restTemplate.postForEntity("/api/auth/register", registerRequestDto,
                                           ApiResponseDto.class);
@@ -53,8 +50,7 @@ import static org.junit.jupiter.api.Assertions.*;
     private ResponseEntity<ApiResponseDto> loginUser(String username, String password) {
         LoginRequestDto loginRequestDto = new LoginRequestDto(username, password);
 
-        return restTemplate.postForEntity("/api/auth/login", loginRequestDto,
-                                          ApiResponseDto.class);
+        return restTemplate.postForEntity("/api/auth/login", loginRequestDto, ApiResponseDto.class);
     }
 
     private void assertErrorResponse(ResponseEntity<ApiResponseDto> response, HttpStatus expectedHttpStatus, String expectedErrorField) {
@@ -78,22 +74,17 @@ import static org.junit.jupiter.api.Assertions.*;
     @Nested class RegistrationTests {
 
         @Test void should_returnCreatedStatus_when_registeringNewUser() {
-            ResponseEntity<ApiResponseDto> response = registerUser("username",
-                                                                   "password");
+            ResponseEntity<ApiResponseDto> response = registerUser("username", "password");
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
         }
 
-        @Test
-        void should_returnCreatedStatus_when_registeringNewUserWithHyphenatedUsername() {
-            ResponseEntity<ApiResponseDto> response = registerUser("user-name",
-                                                                   "password");
+        @Test void should_returnCreatedStatus_when_registeringNewUserWithHyphenatedUsername() {
+            ResponseEntity<ApiResponseDto> response = registerUser("user-name", "password");
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
         }
 
-        @Test
-        void should_returnCreatedStatus_when_registeringNewUserWithUnderscoredUsername() {
-            ResponseEntity<ApiResponseDto> response = registerUser("user_name",
-                                                                   "password");
+        @Test void should_returnCreatedStatus_when_registeringNewUserWithUnderscoredUsername() {
+            ResponseEntity<ApiResponseDto> response = registerUser("user_name", "password");
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
         }
 
@@ -144,24 +135,21 @@ import static org.junit.jupiter.api.Assertions.*;
         }
 
         @Test void should_returnBadRequest_when_usernameContainsSpace() {
-            ResponseEntity<ApiResponseDto> response = registerUser("user name",
-                                                                   "password");
+            ResponseEntity<ApiResponseDto> response = registerUser("user name", "password");
 
             // Use helper for BAD_REQUEST related to the 'username' field (validation)
             assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
         }
 
         @Test void should_returnBadRequest_when_usernameContainsBackslash() {
-            ResponseEntity<ApiResponseDto> response = registerUser("user\name",
-                                                                   "password");
+            ResponseEntity<ApiResponseDto> response = registerUser("user\name", "password");
 
             // Use helper for BAD_REQUEST related to the 'username' field (validation)
             assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
         }
 
         @Test void should_returnBadRequest_when_usernameContainsSpecialCharacter() {
-            ResponseEntity<ApiResponseDto> response = registerUser("user$name",
-                                                                   "password");
+            ResponseEntity<ApiResponseDto> response = registerUser("user$name", "password");
 
             // Use helper for BAD_REQUEST related to the 'username' field (validation)
             assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
@@ -182,8 +170,7 @@ import static org.junit.jupiter.api.Assertions.*;
         }
 
         @Test void should_returnBadRequest_when_usernameContainsWhitespace() {
-            ResponseEntity<ApiResponseDto> response = registerUser("user name",
-                                                                   "password");
+            ResponseEntity<ApiResponseDto> response = registerUser("user name", "password");
 
             // Use helper for BAD_REQUEST related to the 'username' field (validation)
             assertErrorResponse(response, HttpStatus.BAD_REQUEST, "username");
@@ -196,8 +183,7 @@ import static org.junit.jupiter.api.Assertions.*;
             ResponseEntity<ApiResponseDto> response = loginUser("username", "password");
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertNotNull(
-                    response.getBody()); // Ensure the body isn't null for a success case
+            assertNotNull(response.getBody()); // Ensure the body isn't null for a success case
             assertNull(response.getBody().getErrors(),
                        "Errors should be null for successful login");
         }
@@ -208,8 +194,7 @@ import static org.junit.jupiter.api.Assertions.*;
             ResponseEntity<ApiResponseDto> response = loginUser("USERNAME", "password");
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertNotNull(
-                    response.getBody()); // Ensure the body isn't null for a success case
+            assertNotNull(response.getBody()); // Ensure the body isn't null for a success case
             assertNull(response.getBody().getErrors(),
                        "Errors should be null for successful login with capitalized username");
         }
@@ -224,8 +209,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
         @Test void should_returnUnauthorized_when_loggingInToAccountWithWrongPassword() {
             registerUser("username", "password");
-            ResponseEntity<ApiResponseDto> response = loginUser("username",
-                                                                "incorrectPassword");
+            ResponseEntity<ApiResponseDto> response = loginUser("username", "incorrectPassword");
 
             // Call the helper method
             assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");
@@ -242,8 +226,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
         @Test void should_returnUnauthorized_when_loggingInToAccountWithWrongUsername() {
             registerUser("username", "password");
-            ResponseEntity<ApiResponseDto> response = loginUser("incorrectUsername",
-                                                                "password");
+            ResponseEntity<ApiResponseDto> response = loginUser("incorrectUsername", "password");
 
             // Call the helper method
             assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "auth.error");

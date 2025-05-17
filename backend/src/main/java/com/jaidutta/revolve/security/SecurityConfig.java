@@ -41,11 +41,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
     @Bean public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-            .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(
-                                       unauthorizedHandler()) // Use the custom entry point
+            .exceptionHandling(
+                    exceptions -> exceptions.authenticationEntryPoint(unauthorizedHandler())
+                    // Use the custom entry point
                               )
-            .sessionManagement(session -> session.sessionCreationPolicy(
-                    SessionCreationPolicy.STATELESS))
+            .sessionManagement(
+                    session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz.requestMatchers("/api/auth/**")
                                                  .permitAll()
                                                  .anyRequest()

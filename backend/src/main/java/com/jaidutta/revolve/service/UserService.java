@@ -21,8 +21,9 @@ import org.springframework.stereotype.Service;
                                   .orElseThrow(() -> new UsernameNotFoundException(
                                           "User not found with username: " + username));
 
-        return org.springframework.security.core.userdetails.User.withUsername(
-                user.getUsername()).password(user.getPassword()).build();
+        return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+                                                                 .password(user.getPassword())
+                                                                 .build();
     }
 
     public User findUserByUsername(String username) throws UsernameNotFoundException {

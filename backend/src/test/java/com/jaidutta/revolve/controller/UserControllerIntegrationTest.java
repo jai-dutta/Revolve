@@ -21,19 +21,17 @@ import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers public class UserControllerIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) @Testcontainers
+public class UserControllerIntegrationTest {
 
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:16-alpine");
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
+    @DynamicPropertySource static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
@@ -44,8 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
     }
 
     private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
-        RegisterRequestDto registerRequestDto = new RegisterRequestDto(username,
-                                                                       password);
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto(username, password);
 
         return restTemplate.postForEntity("/api/auth/register", registerRequestDto,
                                           ApiResponseDto.class);
@@ -54,8 +51,7 @@ import static org.junit.jupiter.api.Assertions.*;
     private ResponseEntity<ApiResponseDto> loginUser(String username, String password) {
         LoginRequestDto loginRequestDto = new LoginRequestDto(username, password);
 
-        return restTemplate.postForEntity("/api/auth/login", loginRequestDto,
-                                          ApiResponseDto.class);
+        return restTemplate.postForEntity("/api/auth/login", loginRequestDto, ApiResponseDto.class);
     }
 
     @Nested class meTests {
@@ -73,15 +69,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
             HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-            ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange(
-                    "/api/users/me",  // The endpoint URL
-                    HttpMethod.GET, requestEntity, ApiResponseDto.class
-                    // The response type
-                                                                               );
+            ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange("/api/users/me",
+                                                                                HttpMethod.GET,
+                                                                                requestEntity,
+                                                                                ApiResponseDto.class);
 
             assertEquals(HttpStatus.OK, userResponse.getStatusCode());
             assertNotNull(userResponse.getBody());
-            assertEquals(userResponse.getBody().getMessage(), "Hello username");
+            assertEquals("Hello username", userResponse.getBody().getMessage());
         }
 
         @Test public void should_returnCurrentUserDetailsWithCapitalisedUsername() {
@@ -98,11 +93,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
             HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-            ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange(
-                    "/api/users/me",  // The endpoint URL
-                    HttpMethod.GET, requestEntity, ApiResponseDto.class
-                    // The response type
-                                                                               );
+            ResponseEntity<ApiResponseDto> userResponse = restTemplate.exchange("/api/users/me",
+                                                                                HttpMethod.GET,
+                                                                                requestEntity,
+                                                                                ApiResponseDto.class);
 
             assertEquals(HttpStatus.OK, userResponse.getStatusCode());
             assertNotNull(userResponse.getBody());

@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
     @GetMapping("/me") public ResponseEntity<?> getCurrentUser() {
 
-        Authentication authentication = SecurityContextHolder.getContext()
-                                                             .getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getPrincipal() instanceof UserDetails userDetails) {
             String username = userDetails.getUsername();

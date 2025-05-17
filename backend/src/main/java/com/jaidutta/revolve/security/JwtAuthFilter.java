@@ -25,8 +25,7 @@ import java.io.IOException;
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
 
-    @Autowired
-    public JwtAuthFilter(JwtUtils jwtUtils, UserDetailsService userDetailsService) {
+    @Autowired public JwtAuthFilter(JwtUtils jwtUtils, UserDetailsService userDetailsService) {
         this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
     }
@@ -59,11 +58,9 @@ import java.io.IOException;
 
                 // Set the authentication object in Spring Security Context
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.debug("Set Authentication in SecurityContextHolder for user '{}'",
-                             username);
+                logger.debug("Set Authentication in SecurityContextHolder for user '{}'", username);
             } else {
-                logger.debug(
-                        "JWT Token is null, invalid, or expired. No authentication set.");
+                logger.debug("JWT Token is null, invalid, or expired. No authentication set.");
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());
