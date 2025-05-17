@@ -38,6 +38,7 @@ public class AuthControllerIntegrationTest {
 
     @BeforeEach void setup() {
         userRepository.deleteAll();
+
     }
 
     private ResponseEntity<ApiResponseDto> registerUser(String username, String password) {
