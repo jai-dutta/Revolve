@@ -58,7 +58,7 @@ import java.util.ArrayList;
         ApiResponseDto<String> apiResponseDto = ApiResponseDto.error("activity.add",
                                                                      "Too many recurring activities currently registered");
 
-        return new ResponseEntity<>(apiResponseDto, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

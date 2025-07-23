@@ -2,9 +2,7 @@ package com.jaidutta.revolve.controller.dto;
 
 import com.jaidutta.revolve.definitions.ActivityType;
 import com.jaidutta.revolve.entity.RecurringActivity;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -27,8 +25,11 @@ public class RecurringActivityDto {
     @NotNull
     private DayOfWeek dayOfWeek;
 
+    @NotNull
     private LocalTime startTime;
 
+    @NotNull
+    @Positive
     private Integer durationMinutes;
 
     public RecurringActivityDto() {}

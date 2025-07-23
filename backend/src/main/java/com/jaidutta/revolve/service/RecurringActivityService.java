@@ -29,7 +29,7 @@ import java.util.Optional;
     public RecurringActivity createRecurringActivity(User user, RecurringActivityDto recurringDto)
             throws TooManyRecurringActivitiesRegisteredByUserException {
         // Todo: add config instead of magic number 20
-        if (user.getEventsCurrentlyRegistered() > 20) {
+        if (user.getEventsCurrentlyRegistered() == 20) {
             throw new TooManyRecurringActivitiesRegisteredByUserException(
                     "Too many recurring " + "activities registered for user: " +
                     user.getUsername());

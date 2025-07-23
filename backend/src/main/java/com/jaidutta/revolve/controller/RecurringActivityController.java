@@ -35,22 +35,18 @@ public class RecurringActivityController {
     public ResponseEntity<?> createRecurringActivity(@Valid @RequestBody RecurringActivityDto recurringActivityDto)
             throws TooManyRecurringActivitiesRegisteredByUserException {
         User user = getCurrentUserEntity();
-        RecurringActivity savedActivity = this.recurringActivityService.createRecurringActivity(
-                user, recurringActivityDto);
-        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(
-                savedActivity);
+        RecurringActivity savedActivity = this.recurringActivityService.createRecurringActivity(user, recurringActivityDto);
+        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(savedActivity);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.success(responseDto));
     }
 
     @GetMapping public ResponseEntity<?> readAllRecurringActivities() {
         User user = getCurrentUserEntity();
-        List<RecurringActivity> activities = this.recurringActivityService.getRecurringActivitiesByUser(
-                user);
+        List<RecurringActivity> activities = this.recurringActivityService.getRecurringActivitiesByUser(user);
         List<RecurringActivityDto> activityResponseDtos = new ArrayList<>();
 
         for (RecurringActivity recurringActivity : activities) {
-            activityResponseDtos.add(
-                    RecurringActivityDto.mapToRecurringActivity(recurringActivity));
+            activityResponseDtos.add(RecurringActivityDto.mapToRecurringActivity(recurringActivity));
         }
         return ResponseEntity.ok().body(ApiResponseDto.success(activityResponseDtos));
     }
@@ -59,11 +55,9 @@ public class RecurringActivityController {
     public ResponseEntity<?> updateRecurringActivity(@PathVariable Long id, @Valid @RequestBody RecurringActivityDto recurringActivityDto)
             throws RecurringActivityNotFoundException {
         User user = getCurrentUserEntity();
-        RecurringActivity updatedActivity = this.recurringActivityService.updateRecurringActivityByIdAndUser(
-                id, user, recurringActivityDto);
+        RecurringActivity updatedActivity = this.recurringActivityService.updateRecurringActivityByIdAndUser(id, user, recurringActivityDto);
 
-        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(
-                updatedActivity);
+        RecurringActivityDto responseDto = RecurringActivityDto.mapToRecurringActivity(updatedActivity);
 
         return ResponseEntity.ok().body(ApiResponseDto.success(responseDto));
     }
