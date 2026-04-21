@@ -5,9 +5,11 @@ import com.jaidutta.revolve.entity.RecurringActivity;
 import com.jaidutta.revolve.entity.User;
 import com.jaidutta.revolve.exception.RecurringActivityNotFoundException;
 import com.jaidutta.revolve.exception.TooManyRecurringActivitiesRegisteredByUserException;
+import com.jaidutta.revolve.repository.ActivityInstanceRepository;
 import com.jaidutta.revolve.repository.RecurringActivityRepository;
 import com.jaidutta.revolve.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,21 +20,26 @@ import java.util.Optional;
 
     private final RecurringActivityRepository recurringActivityRepository;
     private final UserRepository userRepository;
+    private final ActivityInstanceRepository activityInstanceRepository;
+
+    @Value("${app.activities.max-per-user:50}")
+    private int maxActivitiesPerUser;
 
     @Autowired
-    public RecurringActivityService(RecurringActivityRepository recurringActivityRepository, UserRepository userRepository) {
+    public RecurringActivityService(RecurringActivityRepository recurringActivityRepository,
+                                    UserRepository userRepository,
+                                    ActivityInstanceRepository activityInstanceRepository) {
         this.recurringActivityRepository = recurringActivityRepository;
         this.userRepository = userRepository;
+        this.activityInstanceRepository = activityInstanceRepository;
     }
 
     @Transactional
     public RecurringActivity createRecurringActivity(User user, RecurringActivityDto recurringDto)
             throws TooManyRecurringActivitiesRegisteredByUserException {
-        // Todo: add config instead of magic number 20
-        if (user.getEventsCurrentlyRegistered() == 20) {
+        if (user.getEventsCurrentlyRegistered() >= maxActivitiesPerUser) {
             throw new TooManyRecurringActivitiesRegisteredByUserException(
-                    "Too many recurring " + "activities registered for user: " +
-                    user.getUsername());
+                    "Too many recurring activities registered for user: " + user.getUsername());
         }
 
         RecurringActivity recurringActivity = new RecurringActivity(user,
@@ -60,14 +67,12 @@ import java.util.Optional;
 
     @Transactional public void deleteRecurringActivityByIdAndUser(Long id, User user)
             throws RecurringActivityNotFoundException {
-        Optional<RecurringActivity> activityToDelete = getRecurringActivityByIdAndUser(id, user);
-        if (activityToDelete.isPresent()) {
-            recurringActivityRepository.deleteById(id);
-            user.setEventsCurrentlyRegistered(user.getEventsCurrentlyRegistered() - 1);
-            this.userRepository.save(user);
-        } else {
-            throw new RecurringActivityNotFoundException("Activity " + id + " not found");
-        }
+        RecurringActivity activityToDelete = getRecurringActivityByIdAndUser(id, user)
+                .orElseThrow(() -> new RecurringActivityNotFoundException("Activity " + id + " not found"));
+        activityInstanceRepository.deleteAllByRecurringActivity(activityToDelete);
+        recurringActivityRepository.delete(activityToDelete);
+        user.setEventsCurrentlyRegistered(user.getEventsCurrentlyRegistered() - 1);
+        this.userRepository.save(user);
     }
 
     @Transactional

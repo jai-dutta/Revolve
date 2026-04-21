@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-ink-950 text-ink-200 antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  ::selection {
+    @apply bg-accent-500/30 text-white;
+  }
+
+  /* Better scrollbars */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #27272b;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background-color: #3f3f45; background-clip: padding-box; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-white text-ink-950 font-medium px-4 py-2 rounded-lg
+           hover:bg-ink-200 active:scale-[0.98] transition-all duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white text-sm;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 text-ink-400 hover:text-white
+           hover:bg-ink-850 px-3 py-1.5 rounded-lg transition-colors text-sm;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 border border-ink-700 hover:border-ink-500
+           text-ink-300 hover:text-white px-3 py-1.5 rounded-lg transition-colors text-sm;
+  }
+
+  .input-field {
+    @apply w-full bg-ink-850 border border-ink-700 rounded-lg px-3 py-2.5 text-sm text-white
+           placeholder-ink-500 focus:outline-none focus:border-accent-500/50 focus:ring-2
+           focus:ring-accent-500/10 transition-all;
+  }
+
+  .label {
+    @apply block text-[11px] font-medium text-ink-500 mb-1.5 uppercase tracking-[0.08em];
+  }
+
+  .card-surface {
+    @apply bg-ink-900 border border-ink-800 rounded-xl;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 { perspective: 1000px; }
+  .transform-style-3d { transform-style: preserve-3d; }
+  .backface-hidden { backface-visibility: hidden; }
+  .rotate-y-180 { transform: rotateY(180deg); }
+
+  /* Subtle grid background */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .bg-radial-glow {
+    background: radial-gradient(circle at 50% 0%, rgba(241,169,68,0.08), transparent 50%);
+  }
+
+  .text-balance { text-wrap: balance; }
+}

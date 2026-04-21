@@ -30,6 +30,7 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	runtimeOnly 'org.postgresql:postgresql' // Needed for main app AND tests with Testcontainers
+	runtimeOnly 'com.h2database:h2' // In-memory DB for local development (use 'local' profile)
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Includes JUnit 5, Mockito, etc.
 	testImplementation 'org.springframework.security:spring-security-test'
