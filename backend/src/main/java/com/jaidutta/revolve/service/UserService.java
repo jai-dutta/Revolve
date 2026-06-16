@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
     }
 
     public User findUserByUsername(String username) throws UsernameNotFoundException {
-        return this.userRepository.findByUsername(username)
+        return this.userRepository.findByUsernameIgnoreCase(username)
                                   .orElseThrow(() -> new UsernameNotFoundException(
                                           "User not found with username: " + username));
     }
