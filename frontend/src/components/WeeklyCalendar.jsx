@@ -24,7 +24,7 @@ export default function WeeklyCalendar({ instances, weekStartDate, onToggle }) {
   instances.forEach((inst) => {
     if (byDay[inst.dayOfWeek]) byDay[inst.dayOfWeek].push(inst)
   })
-  DAYS.forEach((d) => byDay[d].sort((a, b) => (a.startTime > b.startTime ? 1 : -1)))
+  DAYS.forEach((d) => byDay[d].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')))
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">

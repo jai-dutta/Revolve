@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Check, Clock, Flame, GraduationCap, BookOpen, FlaskConical, Users, Wrench, BookMarked } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Check, Clock, CalendarClock, Flame, GraduationCap, BookOpen, FlaskConical, Users, Wrench, BookMarked } from 'lucide-react'
 
 // Harmonious, muted-but-vivid accents with icon pairing
 const TYPE_STYLES = {
@@ -21,8 +21,17 @@ function formatTime(timeStr) {
   return `${display}:${m}${ampm}`
 }
 
-export default function ActivityCard({ instance, onToggle, compact = false }) {
+function formatDueDate(isoDate) {
+  if (!isoDate) return ''
+  // Parse as a local date (avoid UTC shift from `new Date('YYYY-MM-DD')`)
+  const [y, m, d] = isoDate.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+}
+
+export default function ActivityCard({ instance, onToggle, compact = false, showDueDate = false }) {
   const [busy, setBusy] = useState(false)
+  const reduceMotion = useReducedMotion()
   const style = TYPE_STYLES[instance.activityType] || TYPE_STYLES.LECTURE
   const Icon = style.icon
   const isCompleted = instance.completed
@@ -34,14 +43,31 @@ export default function ActivityCard({ instance, onToggle, compact = false }) {
     try { await onToggle(instance.id) } finally { setBusy(false) }
   }
 
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleFlip()
+    }
+  }
+
+  const ariaLabel = `${instance.activityName}, ${instance.courseName}. ${
+    isCompleted ? 'Completed' : 'Not completed'
+  }. Press to ${isCompleted ? 'reopen' : 'mark complete'}.`
+
   return (
     <div className="perspective-1000 w-full">
       <motion.div
         animate={{ rotateY: isCompleted ? 180 : 0 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-        className="relative w-full transform-style-3d cursor-pointer"
+        transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 260, damping: 24 }}
+        className="relative w-full transform-style-3d cursor-pointer rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950"
         style={{ transformStyle: 'preserve-3d', minHeight: compact ? 92 : 108 }}
         onClick={handleFlip}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-pressed={isCompleted}
+        aria-label={ariaLabel}
+        aria-busy={busy}
       >
         {/* Front */}
         <div
@@ -67,13 +93,22 @@ export default function ActivityCard({ instance, onToggle, compact = false }) {
                 </p>
               </div>
               {isBacklogged && (
-                <Flame className="w-3.5 h-3.5 text-accent-400 shrink-0" title="In backlog" />
+                <Flame className="w-3.5 h-3.5 text-accent-400 shrink-0" aria-label="In backlog" />
               )}
             </div>
 
             <div className="mt-auto flex items-center gap-1.5 text-[11px] text-ink-500">
-              <Clock className="w-3 h-3" />
-              <span>{formatTime(instance.startTime)}</span>
+              {showDueDate ? (
+                <>
+                  <CalendarClock className="w-3 h-3" />
+                  <span>{formatDueDate(instance.dueDate)}</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="w-3 h-3" />
+                  <span>{formatTime(instance.startTime)}</span>
+                </>
+              )}
               <span className="text-ink-700">·</span>
               <span>{instance.durationMinutes}m</span>
             </div>

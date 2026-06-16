@@ -9,6 +9,10 @@ import {
   Plus,
   CalendarDays,
   Loader2,
+  Clock3,
+  CircleCheck,
+  ListChecks,
+  Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
@@ -39,6 +43,26 @@ function formatWeekLabel(monday) {
   const sameMonth = monday.getMonth() === sunday.getMonth()
   const opts = { day: 'numeric', month: sameMonth ? undefined : 'short' }
   return `${monday.toLocaleDateString('en-GB', opts)} – ${sunday.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
+}
+
+function weekOffset(monday) {
+  const current = getMondayOfWeek(new Date())
+  return Math.round((monday - current) / (7 * 24 * 60 * 60 * 1000))
+}
+
+function relativeWeekLabel(offset) {
+  if (offset === 0) return 'This week'
+  if (offset === -1) return 'Last week'
+  if (offset === 1) return 'Next week'
+  if (offset < 0) return `${-offset} weeks ago`
+  return `In ${offset} weeks`
+}
+
+function formatHours(minutes) {
+  if (!minutes) return '0h'
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return [h ? `${h}h` : null, m ? `${m}m` : null].filter(Boolean).join(' ')
 }
 
 export default function DashboardPage() {
@@ -92,7 +116,8 @@ export default function DashboardPage() {
   }, [menuOpen])
 
   async function handleToggle(id) {
-    const prev = instances
+    const prevInstances = instances
+    const prevBacklog = backlog
     // optimistic update
     setInstances((p) => p.map((i) => i.id === id ? { ...i, completed: !i.completed } : i))
     setBacklog((b) => b.map((i) => i.id === id ? { ...i, completed: !i.completed } : i))
@@ -103,7 +128,8 @@ export default function DashboardPage() {
       setBacklog((b) => b.map((i) => i.id === id ? updated : i))
       if (updated.completed) toast(`Done: ${updated.activityName}`, 'success')
     } catch (err) {
-      setInstances(prev)
+      setInstances(prevInstances)
+      setBacklog(prevBacklog)
       toast(err.message, 'error')
     }
   }
@@ -116,6 +142,9 @@ export default function DashboardPage() {
   const completedCount = instances.filter((i) => i.completed).length
   const totalCount = instances.length
   const progressPct = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
+  const scheduledMinutes = instances.reduce((sum, i) => sum + (i.durationMinutes || 0), 0)
+  const completedMinutes = instances.reduce((sum, i) => sum + (i.completed ? i.durationMinutes || 0 : 0), 0)
+  const allDone = totalCount > 0 && completedCount === totalCount
 
   return (
     <div className="min-h-screen bg-ink-950">
@@ -234,6 +263,14 @@ export default function DashboardPage() {
           <EmptyState onAdd={() => setShowManage(true)} />
         ) : (
           <>
+            <WeekSummary
+              offsetLabel={relativeWeekLabel(weekOffset(weekMonday))}
+              rangeLabel={formatWeekLabel(weekMonday)}
+              scheduledMinutes={scheduledMinutes}
+              completedMinutes={completedMinutes}
+              remaining={totalCount - completedCount}
+              allDone={allDone}
+            />
             <WeeklyCalendar instances={instances} weekStartDate={weekMonday} onToggle={handleToggle} />
             <BacklogSection backlog={backlog} onToggle={handleToggle} />
           </>
@@ -248,6 +285,58 @@ export default function DashboardPage() {
           />
         )}
       </AnimatePresence>
+    </div>
+  )
+}
+
+function WeekSummary({ offsetLabel, rangeLabel, scheduledMinutes, completedMinutes, remaining, allDone }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
+    >
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.14em] text-ink-500">{offsetLabel}</p>
+        <h1 className="mt-1 font-display text-3xl sm:text-4xl italic text-white leading-none">
+          {rangeLabel}
+        </h1>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <StatChip icon={Clock3} label="Scheduled" value={formatHours(scheduledMinutes)} />
+        <StatChip
+          icon={CircleCheck}
+          label="Completed"
+          value={formatHours(completedMinutes)}
+          tone="emerald"
+        />
+        {allDone ? (
+          <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs font-medium">
+            <Sparkles className="w-3.5 h-3.5" />
+            All caught up
+          </span>
+        ) : (
+          <StatChip icon={ListChecks} label="Remaining" value={String(remaining)} tone="accent" />
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+function StatChip({ icon: Icon, label, value, tone = 'default' }) {
+  const tones = {
+    default: 'text-ink-300',
+    emerald: 'text-emerald-400',
+    accent: 'text-accent-400',
+  }
+  return (
+    <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-ink-900 border border-ink-800">
+      <Icon className={`w-4 h-4 ${tones[tone]}`} />
+      <div className="flex flex-col leading-tight">
+        <span className="text-[10px] uppercase tracking-[0.1em] text-ink-500">{label}</span>
+        <span className="text-sm font-semibold text-white tabular-nums">{value}</span>
+      </div>
     </div>
   )
 }
